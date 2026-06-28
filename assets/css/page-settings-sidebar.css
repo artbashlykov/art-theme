@@ -1,0 +1,14 @@
+/**
+ * Spacing for ART Theme page settings in the block editor sidebar.
+ */
+.art-theme-page-template-panel__hide-title {
+	margin-top: 16px;
+}
+
+.art-theme-page-template-panel .components-base-control {
+	margin-bottom: 0;
+}
+
+.art-theme-page-template-panel__hide-title .components-base-control__help {
+	margin-bottom: 0;
+}

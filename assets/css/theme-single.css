@@ -1,0 +1,183 @@
+﻿/**
+ * ART Theme — single styles.
+ * Loaded conditionally on the front end; see inc/class-theme-styles.php.
+ *
+ * @package Art_Theme
+ */
+
+/* Single post — variant 1: content block on gray canvas. */
+.art-theme-shell.art-theme-shell--single-boxed {
+	border-radius: var(--art-theme-single-boxed-radius, 10px);
+	box-shadow: var(--art-theme-single-boxed-shadow, 0 2px 24px rgba(0, 0, 0, 0.06));
+	padding: var(--art-theme-single-boxed-padding-block, 32px) var(--art-theme-single-boxed-padding-inline, 24px);
+	overflow: hidden;
+}
+
+.art-theme-canvas--single:not(.art-theme-canvas--single-full) .art-theme-shell {
+	margin-top: var(--art-theme-single-top-spacing, 16px);
+}
+
+/* Single post — variant 2: full-width white background. */
+.art-theme-canvas--single-full {
+	background: var(--art-theme-surface);
+	padding-inline: 0;
+	padding-bottom: var(--art-theme-space-lg);
+}
+
+.art-theme-shell--single-full {
+	max-width: none;
+	background: transparent;
+	padding: 0;
+	box-shadow: none;
+}
+
+.art-theme-post--single-full .art-theme-single-body {
+	width: 100%;
+	max-width: var(--art-theme-single-width, var(--art-theme-width));
+	margin-inline: auto;
+	padding-inline: var(--art-theme-single-gutter, var(--art-theme-space-md));
+	box-sizing: border-box;
+}
+
+.art-theme-shell--single-full .art-theme-entry-header,
+.art-theme-shell--single-full .art-theme-entry-content {
+	width: 100%;
+	max-width: none;
+	margin-inline: 0;
+	padding-inline: 0;
+}
+
+.art-theme-shell--single-full .art-theme-entry-content > :not(.alignfull):not(.alignwide) {
+	width: 100%;
+	max-width: none;
+	margin-inline: 0;
+}
+
+.art-theme-shell--single-full .art-theme-entry-content > :is(ul, ol, .wp-block-list) {
+	padding-inline-start: 1.5rem;
+	padding-left: 1.5rem;
+	margin-inline-start: 0;
+	list-style-position: outside;
+}
+
+.art-theme-shell--single-full .art-theme-entry-content > .alignfull {
+	width: 100%;
+	max-width: 100%;
+	margin-inline: 0;
+	padding-inline: 0;
+}
+
+@media (min-width: 783px) {
+	.art-theme-shell--single-full .art-theme-entry-content > .alignfull {
+		width: 100vw;
+		max-width: 100vw;
+		margin-inline: calc(50% - 50vw);
+	}
+}
+
+.art-theme-shell--single-full .art-theme-entry-content > .alignwide {
+	width: min(100vw, calc(var(--art-theme-single-width, var(--art-theme-width)) + var(--art-theme-space-lg) * 2));
+	max-width: min(100vw, calc(var(--art-theme-single-width, var(--art-theme-width)) + var(--art-theme-space-lg) * 2));
+	margin-inline: auto;
+	padding-inline: 0;
+}
+
+@media (max-width: 1024px) {
+	.art-theme-post--single-full .art-theme-single-body {
+		padding-inline: max(var(--art-theme-space-md), 1.25rem);
+	}
+}
+
+.art-theme-post--single .art-theme-post__thumbnail--single {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.art-theme-post__thumbnail--single {
+	position: relative;
+	margin-bottom: var(--art-theme-image-gap);
+	width: 100%;
+	overflow: hidden;
+	border-radius: var(--art-theme-image-radius);
+	background: var(--art-theme-border);
+}
+
+.art-theme-post__thumbnail--single:not(.art-theme-post__thumbnail--original) {
+	aspect-ratio: var(--art-theme-single-cover-aspect-ratio, 16 / 9);
+}
+
+.art-theme-post__thumbnail--single.art-theme-post__thumbnail--original {
+	margin-bottom: var(--art-theme-image-gap);
+}
+
+.art-theme-post__thumbnail--single:not(.art-theme-post__thumbnail--original) img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	max-width: none;
+	object-fit: cover;
+	object-position: center;
+	border-radius: 0;
+}
+
+.art-theme-post__thumbnail--single.art-theme-post__thumbnail--original img {
+	position: static;
+	display: block;
+	width: 100%;
+	height: auto;
+	max-width: 100%;
+	border-radius: var(--art-theme-image-radius);
+}
+
+.art-theme-post__thumbnail:not(.art-theme-post__thumbnail--single) a {
+	display: block;
+	line-height: 0;
+}
+
+.art-theme-post__thumbnail:not(.art-theme-post__thumbnail--single) img {
+	display: block;
+	width: 100%;
+	height: auto;
+	border-radius: 4px;
+}
+
+.art-theme-post__meta {
+	margin: 0 0 var(--art-theme-space-sm);
+	font-size: 0.875rem;
+	color: var(--art-theme-muted);
+}
+
+.art-theme-post__meta--single {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0;
+}
+
+.art-theme-post__meta--single .art-theme-post__meta-sep {
+	margin: 0 0.35em;
+	color: var(--art-theme-muted);
+}
+
+.art-theme-post__meta--single a {
+	color: var(--art-theme-muted);
+	text-decoration: none;
+}
+
+.art-theme-post__meta--single a:hover {
+	color: var(--art-theme-fg);
+}
+
+.art-theme-post--single-full .art-theme-entry-content :is(ul, ol, .wp-block-list) {
+	padding-inline-start: 1.5rem;
+	padding-left: 1.5rem;
+}
+
+@media (max-width: 782px) {
+	.art-theme-post--single-full .art-theme-entry-content :is(ul, ol, .wp-block-list) {
+		padding-inline-start: 1.625rem;
+		padding-left: 1.625rem;
+	}
+}
+

@@ -1,0 +1,84 @@
+﻿/**
+ * ART Theme — not-found styles.
+ * Loaded conditionally on the front end; see inc/class-theme-styles.php.
+ *
+ * @package Art_Theme
+ */
+
+/* 404 page */
+.art-theme-canvas--not-found .art-theme-canvas__flex-fill {
+	flex: 0 0 0;
+	display: none;
+}
+
+.art-theme-canvas--not-found .art-theme-shell {
+	display: flex;
+	flex: 1 1 auto;
+	flex-direction: column;
+	max-width: var(--art-theme-width);
+	min-height: 0;
+	background: transparent;
+	padding: 0;
+	box-shadow: none;
+}
+
+.art-theme-canvas--not-found .art-theme-main {
+	display: flex;
+	flex: 1 1 auto;
+	flex-direction: column;
+	min-height: 0;
+}
+
+.art-theme-not-found {
+	display: flex;
+	flex: 1 1 auto;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-height: 0;
+	padding: 3rem var(--art-theme-space-md);
+	text-align: center;
+}
+
+.art-theme-not-found__code {
+	margin: 0 0 0.75rem;
+	font-family: var(--art-theme-font-heading);
+	font-size: clamp(3rem, 10vw, 4.5rem);
+	font-weight: 700;
+	line-height: 1;
+	color: var(--art-theme-fg);
+}
+
+.art-theme-not-found__message {
+	max-width: 28rem;
+	margin: 0 0 1.5rem;
+	font-size: 1rem;
+	line-height: 1.55;
+	color: var(--art-theme-muted);
+}
+
+.art-theme-not-found__actions {
+	margin: 0;
+}
+
+.art-theme-not-found__button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 40px;
+	padding: 0 18px;
+	border-radius: 8px;
+	border: 1px solid var(--art-theme-fg);
+	background: var(--art-theme-fg);
+	color: var(--art-theme-surface);
+	font-size: 0.875rem;
+	font-weight: 600;
+	line-height: 1.2;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.art-theme-not-found__button:hover {
+	color: var(--art-theme-surface);
+	opacity: 0.9;
+}

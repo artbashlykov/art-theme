@@ -1,0 +1,64 @@
+/**
+ * Block editor — match single post content spacing.
+ *
+ * @package Art_Theme
+ */
+
+.editor-styles-wrapper :is(ul, ol, .wp-block-list) {
+	padding-inline-start: 1.25em;
+	margin-bottom: var(--art-theme-list-after, 15px) !important;
+	padding-bottom: var(--art-theme-list-after, 15px) !important;
+}
+
+.editor-styles-wrapper :is(ul, ol, .wp-block-list) > li {
+	margin-bottom: 0.75em;
+}
+
+.editor-styles-wrapper :is(ul, ol, .wp-block-list) > li:last-child {
+	margin-bottom: 0;
+}
+
+.editor-styles-wrapper figure.wp-block-image,
+.editor-styles-wrapper figure.wp-block-gallery {
+	margin-bottom: 0 !important;
+	padding-bottom: var(--art-theme-image-gap, 20px) !important;
+}
+
+.editor-styles-wrapper figure.wp-block-gallery figure.wp-block-image {
+	margin-bottom: 0;
+}
+
+.editor-styles-wrapper figure.wp-block-image img,
+.editor-styles-wrapper figure.wp-block-gallery img {
+	border-radius: var(--art-theme-image-radius, 10px);
+}
+
+/* Match front-end content column width in the post editor. */
+.editor-styles-wrapper :is(.wp-block-post-content, .is-root-container) {
+	max-width: var(--art-theme-editor-content-width, var(--art-theme-single-width, 850px));
+	margin-inline: auto;
+}
+
+.editor-styles-wrapper :is(.wp-block-post-content, .is-root-container) > .wp-block-separator:not(.is-style-dots):not(.alignfull) {
+	display: flow-root;
+	width: 100%;
+	max-width: 100%;
+	margin-inline: auto;
+	margin-top: 0 !important;
+	margin-bottom: 0 !important;
+	margin-block-start: 0 !important;
+	margin-block-end: 0 !important;
+	padding-top: var(--art-theme-separator-spacing, 10px) !important;
+	padding-bottom: var(--art-theme-separator-spacing, 10px) !important;
+	border: none !important;
+	background: none !important;
+	height: auto !important;
+}
+
+.editor-styles-wrapper :is(.wp-block-post-content, .is-root-container) > .wp-block-separator:not(.is-style-dots):not(.alignfull)::before {
+	content: "";
+	display: block;
+	width: 100%;
+	border: 0;
+	border-top: 2px solid currentColor;
+}

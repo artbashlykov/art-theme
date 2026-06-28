@@ -1,0 +1,350 @@
+﻿/**
+ * ART Theme — base styles.
+ * Loaded conditionally on the front end; see inc/class-theme-styles.php.
+ *
+ * @package Art_Theme
+ */
+
+/**
+ * ART Theme — layout and typography.
+ *
+ * @package Art_Theme
+ */
+
+:root {
+	--art-theme-canvas: #eeeeee;
+	--art-theme-surface: #ffffff;
+	--art-theme-fg: #1a1a1a;
+	--art-theme-muted: #6b6b6b;
+	--art-theme-border: #e5e5e5;
+	--art-theme-width: 850px;
+	--art-theme-single-width: 850px;
+	--art-theme-single-cover-aspect-ratio: 16 / 9;
+	--art-theme-page-width: 850px;
+	--art-theme-archive-width: 850px;
+	--art-theme-archive-columns: 2;
+	--art-theme-cover-aspect-ratio: 2 / 1;
+	--art-theme-space-sm: 1rem;
+	--art-theme-space-md: 1.5rem;
+	--art-theme-space-lg: 2rem;
+	--art-theme-image-radius: 10px;
+	--art-theme-image-gap: 20px;
+	--art-theme-list-after: 15px;
+	--art-theme-separator-spacing: 10px;
+	--art-theme-card-radius: 12px;
+	--art-theme-category-bg: #eef4ff;
+	--art-theme-category-fg: #2563eb;
+	--art-theme-category-border: #bfdbfe;
+	--art-theme-font: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	--art-theme-font-heading: "Rubik", "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	background: var(--art-theme-canvas);
+	color: var(--art-theme-fg);
+	font-family: var(--art-theme-font);
+	font-size: 1rem;
+	line-height: 1.6;
+}
+
+:is(h1, h2, h3, h4, h5, h6, .art-theme-entry-title, .art-theme-page-title, .art-theme-archive-card__title) {
+	font-family: var(--art-theme-font-heading);
+}
+
+a {
+	color: inherit;
+}
+
+a:hover {
+	color: var(--art-theme-muted);
+}
+
+img {
+	max-width: 100%;
+	height: auto;
+}
+
+.screen-reader-text {
+	border: 0;
+	clip: rect(1px, 1px, 1px, 1px);
+	clip-path: inset(50%);
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	width: 1px;
+	word-wrap: normal !important;
+}
+
+/* Gray page canvas. */
+.art-theme-canvas {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+	padding: var(--art-theme-header-top-spacing, 32px) var(--art-theme-space-sm) var(--art-theme-space-lg);
+	overflow-x: clip;
+}
+
+.art-theme-canvas--has-footer {
+	padding-bottom: 0;
+}
+
+.art-theme-shell {
+	flex: 0 0 auto;
+	width: 100%;
+	max-width: var(--art-theme-width);
+	margin-inline: auto;
+	background: var(--art-theme-surface);
+	padding: 0 var(--art-theme-space-md) var(--art-theme-space-lg);
+	box-shadow: 0 2px 24px rgba(0, 0, 0, 0.06);
+}
+
+/* Fills space between content and footer; shows canvas background (gray). */
+.art-theme-canvas__flex-fill {
+	flex: 1 1 auto;
+	min-height: 0;
+	width: 100%;
+}
+
+/* Archive: cards on gray canvas, no outer white box. */
+.art-theme-shell--archive {
+	max-width: var(--art-theme-archive-width);
+	background: transparent;
+	padding: 0;
+	box-shadow: none;
+}
+
+.art-theme-shell--single {
+	max-width: var(--art-theme-single-width, var(--art-theme-width));
+}
+
+.art-theme-shell--page {
+	max-width: var(--art-theme-page-width, var(--art-theme-width));
+}
+
+.art-theme-pagination {
+	display: flex;
+	justify-content: center;
+	margin-top: var(--art-theme-space-lg);
+}
+
+.art-theme-pagination .page-numbers {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 0.4rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.art-theme-pagination .page-numbers li {
+	margin: 0;
+}
+
+.art-theme-pagination .page-numbers a,
+.art-theme-pagination .page-numbers span {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 2.5rem;
+	height: 2.5rem;
+	padding: 0 0.7rem;
+	border: 1px solid var(--art-theme-border);
+	border-radius: 8px;
+	background: var(--art-theme-surface);
+	color: var(--art-theme-fg);
+	font-family: var(--art-theme-font);
+	font-size: 0.875rem;
+	line-height: 1;
+	text-decoration: none;
+	transition: border-color 0.15s ease, opacity 0.15s ease;
+}
+
+.art-theme-pagination .page-numbers a:hover {
+	border-color: #d0d0d0;
+	opacity: 0.88;
+}
+
+.art-theme-pagination .page-numbers .current {
+	background: var(--art-theme-fg);
+	border-color: var(--art-theme-fg);
+	color: var(--art-theme-surface);
+	font-weight: 600;
+}
+
+.art-theme-pagination .page-numbers .dots {
+	min-width: auto;
+	padding: 0 0.25rem;
+	border: none;
+	background: transparent;
+	color: var(--art-theme-muted);
+}
+/* Main content area. */
+.art-theme-main {
+	min-height: 0;
+}
+
+.art-theme-entry-title {
+	margin: 0 0 var(--art-theme-space-sm);
+	font-size: 1.75rem;
+	font-weight: 600;
+	line-height: 1.3;
+}
+
+.art-theme-entry-title a {
+	text-decoration: none;
+}
+
+.art-theme-entry-content > *:first-child {
+	margin-top: 0;
+}
+
+.art-theme-entry-content {
+	overflow-wrap: break-word;
+	min-width: 0;
+	max-width: 100%;
+}
+
+/* Gutenberg blocks — shared spacing (posts, pages, CPTs). Padding avoids margin collapse with the next block. */
+.art-theme-entry-content :is(ul, ol, .wp-block-list) {
+	margin-top: 0;
+	margin-bottom: var(--art-theme-list-after) !important;
+	margin-block-end: var(--art-theme-list-after) !important;
+	padding-bottom: var(--art-theme-list-after) !important;
+	padding-inline-start: 1.25em;
+	padding-left: 1.25em;
+	list-style-position: outside;
+}
+
+.art-theme-entry-content :is(ul, ol, .wp-block-list) > li {
+	margin-bottom: 0.75em;
+}
+
+.art-theme-entry-content :is(ul, ol, .wp-block-list) > li:last-child {
+	margin-bottom: 0;
+}
+
+.art-theme-entry-content :is(figure.wp-block-image, figure.wp-block-gallery) {
+	margin-top: 0;
+	margin-bottom: 0 !important;
+	margin-block-end: 0 !important;
+	padding-bottom: var(--art-theme-image-gap) !important;
+}
+
+.art-theme-entry-content figure.wp-block-gallery figure.wp-block-image {
+	margin-bottom: 0;
+}
+
+.art-theme-entry-content figure.wp-block-image img,
+.art-theme-entry-content figure.wp-block-gallery img {
+	display: block;
+	width: 100%;
+	max-width: 100%;
+	height: auto;
+	border-radius: var(--art-theme-image-radius);
+}
+
+.art-theme-single-body {
+	min-width: 0;
+	max-width: 100%;
+}
+
+.art-theme-entry-content :is(p, li, h1, h2, h3, h4, h5, h6, td, th, blockquote, figcaption, dd, dt, a) {
+	overflow-wrap: anywhere;
+}
+
+.art-theme-entry-content pre {
+	max-width: 100%;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+
+.art-theme-post--page .art-theme-entry-content > *:last-child {
+	margin-bottom: 0;
+}
+
+.art-theme-page-title {
+	margin: 0 0 var(--art-theme-space-md);
+	font-size: 1.75rem;
+	font-weight: 600;
+	line-height: 1.3;
+}
+
+.art-theme-archive-description {
+	margin: 0 0 var(--art-theme-space-md);
+	color: var(--art-theme-muted);
+}
+
+.art-theme-post--single .art-theme-entry-header > * + * {
+	margin-top: var(--art-theme-space-sm);
+}
+
+.art-theme-page-title {
+	margin: 0 0 var(--art-theme-space-md);
+	font-size: 1.75rem;
+	font-weight: 600;
+	line-height: 1.3;
+}
+.art-theme-post + .art-theme-post {
+	margin-top: var(--art-theme-space-lg);
+	padding-top: var(--art-theme-space-lg);
+	border-top: 1px solid var(--art-theme-border);
+}
+
+/* Separator — full width of the content column, not the viewport. */
+.art-theme-entry-content > .wp-block-separator:not(.is-style-dots):not(.alignfull) {
+	display: flow-root;
+	width: 100%;
+	max-width: 100%;
+	margin-inline: auto;
+	margin-top: 0 !important;
+	margin-bottom: 0 !important;
+	margin-block-start: 0 !important;
+	margin-block-end: 0 !important;
+	padding-top: var(--art-theme-separator-spacing) !important;
+	padding-bottom: var(--art-theme-separator-spacing) !important;
+	border: none !important;
+	background: none !important;
+	height: auto !important;
+}
+
+.art-theme-entry-content > .wp-block-separator:not(.is-style-dots):not(.alignfull)::before {
+	content: "";
+	display: block;
+	width: 100%;
+	border: 0;
+	border-top: 2px solid currentColor;
+}
+
+/* Classic WordPress caption classes (legacy content and Theme Check). */
+.wp-caption {
+	max-width: 100%;
+	margin-bottom: var(--art-theme-image-gap);
+}
+
+.wp-caption img {
+	display: block;
+	max-width: 100%;
+	height: auto;
+	border-radius: var(--art-theme-image-radius);
+}
+
+.wp-caption-text,
+.gallery-caption {
+	margin: 0.5rem 0 0;
+	font-size: 0.875rem;
+	line-height: 1.45;
+	color: var(--art-theme-muted);
+	text-align: center;
+}

@@ -1,0 +1,105 @@
+﻿/**
+ * ART Theme — page styles.
+ * Loaded conditionally on the front end; see inc/class-theme-styles.php.
+ *
+ * @package Art_Theme
+ */
+
+/* Static page — variant 1: content block on gray canvas. */
+.art-theme-shell.art-theme-shell--page-boxed {
+	border-radius: var(--art-theme-page-boxed-radius, 10px);
+	box-shadow: var(--art-theme-page-boxed-shadow, 0 2px 24px rgba(0, 0, 0, 0.06));
+	padding: var(--art-theme-page-boxed-padding-block, 32px) var(--art-theme-page-boxed-padding-inline, 24px);
+	overflow: hidden;
+}
+
+.art-theme-canvas--page:not(.art-theme-canvas--page-full) .art-theme-shell {
+	margin-top: var(--art-theme-page-top-spacing, 16px);
+}
+
+/* Static page — variant 2: full-width white background. */
+.art-theme-canvas--page-full {
+	background: var(--art-theme-surface);
+	padding-inline: 0;
+	padding-bottom: var(--art-theme-space-lg);
+}
+
+.art-theme-shell--page-full {
+	max-width: none;
+	background: transparent;
+	padding: 0;
+	box-shadow: none;
+}
+
+.art-theme-post--page-full .art-theme-page-body {
+	width: 100%;
+	max-width: var(--art-theme-page-width, var(--art-theme-width));
+	margin-inline: auto;
+	padding-inline: var(--art-theme-page-gutter, var(--art-theme-space-md));
+	box-sizing: border-box;
+}
+
+.art-theme-shell--page-full .art-theme-entry-header,
+.art-theme-shell--page-full .art-theme-entry-content {
+	width: 100%;
+	max-width: none;
+	margin-inline: 0;
+	padding-inline: 0;
+}
+
+.art-theme-shell--page-full .art-theme-entry-content > :not(.alignfull):not(.alignwide) {
+	width: 100%;
+	max-width: none;
+	margin-inline: 0;
+}
+
+.art-theme-shell--page-full .art-theme-entry-content > :is(ul, ol, .wp-block-list) {
+	padding-inline-start: 1.5rem;
+	padding-left: 1.5rem;
+	margin-inline-start: 0;
+	list-style-position: outside;
+}
+
+.art-theme-shell--page-full .art-theme-entry-content > .alignfull {
+	width: 100%;
+	max-width: 100%;
+	margin-inline: 0;
+	padding-inline: 0;
+}
+
+@media (min-width: 783px) {
+	.art-theme-shell--page-full .art-theme-entry-content > .alignfull {
+		width: 100vw;
+		max-width: 100vw;
+		margin-inline: calc(50% - 50vw);
+	}
+}
+
+.art-theme-shell--page-full .art-theme-entry-content > .alignwide {
+	width: min(100vw, calc(var(--art-theme-page-width, var(--art-theme-width)) + var(--art-theme-space-lg) * 2));
+	max-width: min(100vw, calc(var(--art-theme-page-width, var(--art-theme-width)) + var(--art-theme-space-lg) * 2));
+	margin-inline: auto;
+	padding-inline: 0;
+}
+
+@media (max-width: 1024px) {
+	.art-theme-post--page-full .art-theme-page-body {
+		padding-inline: max(var(--art-theme-space-md), 1.25rem);
+	}
+}
+
+.art-theme-post--page-full .art-theme-entry-content :is(ul, ol, .wp-block-list) {
+	padding-inline-start: 1.5rem;
+	padding-left: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+	.art-theme-post--page-full .art-theme-entry-content :is(ul, ol, .wp-block-list) {
+		padding-inline-start: 1.25rem;
+		padding-left: 1.25rem;
+	}
+}
+
+.art-theme-post--page .art-theme-entry-content > *:last-child {
+	margin-bottom: 0;
+}

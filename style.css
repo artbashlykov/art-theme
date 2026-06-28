@@ -1,0 +1,23 @@
+/*
+Theme Name: ART Theme
+Theme URI: https://forge.artbashlykov.ru
+Description: Классическая одноколоночная тема без сайдбара. Настраиваемые шапка, подвал, блог, записи и страницы — через Customizer. Серый canvas и белые контентные блоки с гибкой шириной. Gutenberg для контента записей и страниц.
+Version: 1.0.1
+Requires at least: 6.0
+Tested up to: 6.7
+Requires PHP: 7.4
+Author: Арт Башлыков
+Author URI: https://forge.artbashlykov.ru
+Copyright (c) 2026 Арт Башлыков
+License: GPL v2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: art-theme
+Tags: one-column, custom-menu, custom-logo, featured-images, translation-ready, editor-style
+
+ART Theme is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 2 of the License, or
+(at your option) any later version.
+
+@package Art_Theme
+*/

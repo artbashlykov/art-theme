@@ -1,0 +1,196 @@
+.art-theme-customize-field-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-top: 6px;
+}
+
+.art-theme-customize-field-row--textarea {
+	align-items: flex-start;
+}
+
+.art-theme-customize-field-row input[type="text"],
+.art-theme-customize-field-row input[type="number"],
+.art-theme-customize-field-row textarea {
+	flex: 1 1 auto;
+	min-width: 0;
+	width: auto;
+}
+
+.art-theme-customize-field-row--checkbox {
+	justify-content: space-between;
+	margin-top: 0;
+	margin-bottom: 0;
+	min-height: 0;
+}
+
+.art-theme-customize-field-row--checkbox label {
+	flex: 1 1 auto;
+	margin-right: 8px;
+	line-height: 1.3;
+}
+
+/* Controls inside theme panels render under #sub-accordion-section-*, not #accordion-section-*. */
+#customize-theme-controls [id^="sub-accordion-section-art_theme_"] .customize-control-checkbox,
+#customize-theme-controls [id^="accordion-section-art_theme_"] .customize-control-checkbox,
+#customize-theme-controls li.customize-control-checkbox.art-theme-field-enhanced {
+	padding-top: 0;
+	padding-bottom: 0;
+	margin-top: 0;
+	margin-bottom: 4px;
+}
+
+#customize-theme-controls .art-theme-customize-field-row--checkbox {
+	margin: 0;
+	min-height: 0;
+	align-items: center;
+}
+
+#customize-theme-controls .art-theme-customize-field-row--checkbox label {
+	margin: 0;
+	padding: 0;
+}
+
+#customize-theme-controls #customize-control-art_theme_header_button_label {
+	margin-top: 8px;
+	padding-top: 12px;
+	border-top: 1px solid #dcdcde;
+}
+
+#customize-theme-controls #customize-control-art_theme_header_menu_id {
+	margin-top: 8px;
+	padding-top: 12px;
+	border-top: 1px solid #dcdcde;
+}
+
+.art-theme-customize-reset--inline {
+	flex: 0 0 auto;
+	width: auto !important;
+	min-width: auto;
+	padding: 0 10px !important;
+	height: 30px;
+	line-height: 28px !important;
+	font-size: 12px;
+	white-space: nowrap;
+	border-color: #1d2327 !important;
+	background: #1d2327 !important;
+	color: #fff !important;
+	box-shadow: none !important;
+}
+
+.art-theme-customize-reset--inline:hover,
+.art-theme-customize-reset--inline:focus {
+	border-color: #000 !important;
+	background: #000 !important;
+	color: #fff !important;
+}
+
+.art-theme-customize-field-row--layout-order {
+	justify-content: space-between;
+	margin-top: 0;
+	margin-bottom: 6px;
+}
+
+.art-theme-customize-field-row--layout-order .customize-control-title {
+	flex: 1 1 auto;
+	margin-right: 8px;
+}
+
+.customize-control-art_theme_layout_order .art-theme-layout-order {
+	max-width: 100%;
+}
+
+.customize-control-art_theme_layout_order .art-theme-layout-order__item {
+	border-color: #dcdcde;
+}
+
+.customize-control-art_theme_layout_order .customize-control-description {
+	display: block;
+	margin-bottom: 15px;
+}
+
+.customize-control.art-theme-single-boxed-only,
+.customize-control.art-theme-page-boxed-only,
+.customize-control.art-theme-header-fixed-only,
+.customize-control.art-theme-footer-fixed-only {
+	display: none;
+}
+
+.customize-control-art_theme_layout_order {
+	margin-top: 0;
+	padding-top: 12px;
+	border-top: 1px solid #dcdcde;
+}
+
+.art-theme-footer-repeater__list {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin: 8px 0 10px;
+}
+
+.art-theme-footer-repeater__item {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	gap: 8px;
+	align-items: start;
+	padding: 10px 12px;
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+	background: #fff;
+}
+
+.art-theme-footer-repeater__fields {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	min-width: 0;
+}
+
+.art-theme-footer-repeater__fields input[type="text"],
+.art-theme-footer-repeater__fields input[type="url"],
+.art-theme-footer-repeater__fields select {
+	width: 100%;
+}
+
+.art-theme-footer-repeater__new-tab {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin: 0;
+	font-size: 12px;
+	line-height: 1.35;
+}
+
+.art-theme-footer-repeater__remove {
+	align-self: center;
+}
+
+.art-theme-layout-order {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	max-width: 28rem;
+}
+
+.art-theme-layout-order__item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0 0 8px;
+	padding: 10px 12px;
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+	background: #fff;
+	cursor: grab;
+}
+
+.art-theme-layout-order__handle {
+	color: #787c82;
+	cursor: grab;
+}
+
+.art-theme-layout-order__label {
+	flex: 1 1 auto;
+	font-weight: 500;
+}
