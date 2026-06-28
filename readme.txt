@@ -2,9 +2,9 @@
 Contributors: artbashlykov
 Tags: one-column, custom-menu, custom-logo, featured-images, translation-ready, editor-style
 Requires at least: 6.0
-Tested up to: 6.7
+Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,6 +46,10 @@ No. The theme is intentionally one-column.
 No. The theme works standalone. If ART Starter is active, footer social icons can use the shared icon registry.
 
 == Changelog ==
+
+= 1.0.2 =
+* Обновлено описание темы (скорость загрузки, мобильные устройства).
+* Протестировано с WordPress 7.0.
 
 = 1.0.1 =
 * Post meta cache writes only on save_post (security).
