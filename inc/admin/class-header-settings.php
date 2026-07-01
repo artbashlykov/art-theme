@@ -301,12 +301,37 @@ class Art_Theme_Header_Settings {
 	}
 
 	/**
+	 * Nav menu locations stored in theme mods (no theme_mod_nav_menu_locations filter).
+	 *
+	 * Used internally to avoid recursion when the Customizer preview filter is active.
+	 *
+	 * @return array<string, int>
+	 */
+	private static function get_raw_nav_menu_locations() {
+		$stylesheet = get_stylesheet();
+
+		if ( '' === $stylesheet ) {
+			return array();
+		}
+
+		$mods = get_option( 'theme_mods_' . $stylesheet );
+
+		if ( ! is_array( $mods ) || ! isset( $mods['nav_menu_locations'] ) ) {
+			return array();
+		}
+
+		$locations = $mods['nav_menu_locations'];
+
+		return is_array( $locations ) ? $locations : array();
+	}
+
+	/**
 	 * Menu ID assigned to the Primary Menu theme location.
 	 *
 	 * @return int
 	 */
 	public static function get_primary_location_menu_id() {
-		$locations = get_nav_menu_locations();
+		$locations = self::get_raw_nav_menu_locations();
 
 		if ( empty( $locations[ self::MENU_LOCATION ] ) ) {
 			return 0;
@@ -349,7 +374,7 @@ class Art_Theme_Header_Settings {
 			return;
 		}
 
-		$locations = get_nav_menu_locations();
+		$locations = self::get_raw_nav_menu_locations();
 
 		if ( ! is_array( $locations ) ) {
 			$locations = array();
@@ -364,7 +389,7 @@ class Art_Theme_Header_Settings {
 	 * Remove the menu assignment from the header theme location.
 	 */
 	public static function clear_primary_menu_location() {
-		$locations = get_nav_menu_locations();
+		$locations = self::get_raw_nav_menu_locations();
 
 		if ( ! is_array( $locations ) || ! array_key_exists( self::MENU_LOCATION, $locations ) ) {
 			return;
