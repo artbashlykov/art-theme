@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ART_THEME_VERSION', '1.0.3' );
+define( 'ART_THEME_VERSION', '1.0.4' );
 define( 'ART_THEME_SLUG', 'art-theme' );
 define( 'ART_THEME_DIR', get_template_directory() );
 define( 'ART_THEME_URL', get_template_directory_uri() );
@@ -18,6 +18,8 @@ require_once ART_THEME_DIR . '/inc/setup.php';
 require_once ART_THEME_DIR . '/inc/block-editor.php';
 require_once ART_THEME_DIR . '/inc/fonts.php';
 require_once ART_THEME_DIR . '/inc/enqueue.php';
+require_once ART_THEME_DIR . '/inc/class-theme-spacing.php';
+require_once ART_THEME_DIR . '/inc/class-theme-content-template.php';
 require_once ART_THEME_DIR . '/inc/admin/class-blog-settings.php';
 require_once ART_THEME_DIR . '/inc/admin/class-single-settings.php';
 require_once ART_THEME_DIR . '/inc/admin/class-page-settings.php';

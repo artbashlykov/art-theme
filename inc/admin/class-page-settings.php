@@ -18,8 +18,6 @@ class Art_Theme_Page_Settings {
 
 	const META_HIDE_TITLE = 'art_theme_page_hide_title';
 
-	const CONTENT_TOP_SPACING_DEFAULT = 16;
-
 	/**
 	 * Page template variant slugs (Customizer / global).
 	 */
@@ -34,7 +32,7 @@ class Art_Theme_Page_Settings {
 	 * Register hooks.
 	 */
 	public static function init() {
-		add_action( 'init', array( __CLASS__, 'register_post_meta' ) );
+		add_action( 'init', array( __CLASS__, 'register_post_meta' ), 20 );
 		add_action( 'enqueue_block_editor_assets', array( __CLASS__, 'enqueue_block_editor_assets' ) );
 		add_action( 'customize_save_after', array( __CLASS__, 'normalize_after_customizer_save' ) );
 	}
@@ -45,14 +43,11 @@ class Art_Theme_Page_Settings {
 	 * @return array<string, mixed>
 	 */
 	public static function get_defaults() {
-		return array(
-			'template_variant'     => 'boxed',
-			'page_width'           => 850,
-			'boxed_border_radius'  => 10,
-			'boxed_shadow'         => 'medium',
-			'boxed_padding_block'  => 32,
-			'boxed_padding_inline' => 24,
-			'page_top_spacing'     => self::CONTENT_TOP_SPACING_DEFAULT,
+		return array_merge(
+			Art_Theme_Content_Template::get_boxed_layout_defaults(),
+			array(
+				'page_width' => Art_Theme_Content_Template::CONTENT_WIDTH_DEFAULT,
+			)
 		);
 	}
 
@@ -83,7 +78,6 @@ class Art_Theme_Page_Settings {
 		$settings['boxed_shadow']         = self::sanitize_boxed_shadow( $settings['boxed_shadow'] ?? 'medium' );
 		$settings['boxed_padding_block']  = self::sanitize_boxed_padding_block( $settings['boxed_padding_block'] ?? 32 );
 		$settings['boxed_padding_inline'] = self::sanitize_boxed_padding_inline( $settings['boxed_padding_inline'] ?? 24 );
-		$settings['page_top_spacing']     = self::sanitize_page_top_spacing( $settings['page_top_spacing'] ?? self::CONTENT_TOP_SPACING_DEFAULT );
 
 		$cached = $settings;
 
@@ -105,13 +99,25 @@ class Art_Theme_Page_Settings {
 			}
 		}
 
-		$post = get_post( (int) $post_id );
+		$post_id  = (int) $post_id;
+		$settings = self::get();
+		$post     = get_post( $post_id );
 
-		if ( $post instanceof WP_Post && 'page' === $post->post_type ) {
-			return self::get_for_page( $post_id );
+		if ( ! $post instanceof WP_Post ) {
+			return $settings;
 		}
 
-		return self::get();
+		if ( 'post' === $post->post_type ) {
+			return $settings;
+		}
+
+		$override = self::get_page_template_override( $post_id );
+
+		if ( 'default' !== $override ) {
+			$settings['template_variant'] = self::sanitize_template_variant( $override );
+		}
+
+		return $settings;
 	}
 
 	/**
@@ -120,10 +126,7 @@ class Art_Theme_Page_Settings {
 	 * @return array<string, string>
 	 */
 	public static function get_template_variant_choices() {
-		return array(
-			'boxed'      => __( 'Контентный блок', 'art-theme' ),
-			'full-width' => __( 'Фон на всю ширину', 'art-theme' ),
-		);
+		return Art_Theme_Content_Template::get_template_variant_choices();
 	}
 
 	/**
@@ -132,11 +135,7 @@ class Art_Theme_Page_Settings {
 	 * @return array<string, string>
 	 */
 	public static function get_page_template_override_choices() {
-		return array(
-			'default'    => __( 'По умолчанию', 'art-theme' ),
-			'boxed'      => __( 'Контентный блок', 'art-theme' ),
-			'full-width' => __( 'Фон на всю ширину', 'art-theme' ),
-		);
+		return Art_Theme_Content_Template::get_template_override_choices();
 	}
 
 	/**
@@ -146,13 +145,7 @@ class Art_Theme_Page_Settings {
 	 * @return string
 	 */
 	public static function sanitize_page_template_override( $value ) {
-		$value = sanitize_key( (string) $value );
-
-		if ( in_array( $value, self::PAGE_TEMPLATE_OVERRIDE_VARIANTS, true ) ) {
-			return $value;
-		}
-
-		return 'default';
+		return Art_Theme_Content_Template::sanitize_template_override( $value );
 	}
 
 	/**
@@ -174,23 +167,7 @@ class Art_Theme_Page_Settings {
 	 * @return array<string, mixed>
 	 */
 	public static function get_for_page( $post_id = null ) {
-		$settings = self::get();
-
-		if ( null === $post_id ) {
-			if ( ! is_singular( 'page' ) ) {
-				return $settings;
-			}
-
-			$post_id = (int) get_queried_object_id();
-		}
-
-		$override = self::get_page_template_override( $post_id );
-
-		if ( 'default' !== $override ) {
-			$settings['template_variant'] = self::sanitize_template_variant( $override );
-		}
-
-		return $settings;
+		return self::get_for_singular( $post_id );
 	}
 
 	/**
@@ -225,18 +202,20 @@ class Art_Theme_Page_Settings {
 	 * Register page template meta for the block editor REST API.
 	 */
 	public static function register_post_meta() {
-		register_post_meta(
-			'page',
-			self::META_PAGE_TEMPLATE,
-			array(
-				'show_in_rest'      => true,
-				'single'            => true,
-				'type'              => 'string',
-				'default'           => 'default',
-				'sanitize_callback' => array( __CLASS__, 'sanitize_page_template_override' ),
-				'auth_callback'     => array( __CLASS__, 'page_meta_auth_callback' ),
-			)
-		);
+		foreach ( self::get_page_layout_post_types() as $post_type ) {
+			register_post_meta(
+				$post_type,
+				self::META_PAGE_TEMPLATE,
+				array(
+					'show_in_rest'      => true,
+					'single'            => true,
+					'type'              => 'string',
+					'default'           => 'default',
+					'sanitize_callback' => array( __CLASS__, 'sanitize_page_template_override' ),
+					'auth_callback'     => array( __CLASS__, 'page_meta_auth_callback' ),
+				)
+			);
+		}
 
 		register_post_meta(
 			'page',
@@ -270,7 +249,7 @@ class Art_Theme_Page_Settings {
 	 * Enqueue block editor sidebar controls for page templates.
 	 */
 	public static function enqueue_block_editor_assets() {
-		if ( ! self::is_page_block_editor_screen() ) {
+		if ( ! self::is_page_layout_block_editor_screen() ) {
 			return;
 		}
 
@@ -314,22 +293,41 @@ class Art_Theme_Page_Settings {
 			'art-theme-page-template-sidebar',
 			'artThemePageTemplate',
 			array(
-				'choices'        => $choices,
-				'defaultHelp'    => __( 'Наследует шаблон из настроек темы.', 'art-theme' ),
-				'panelTitle'     => __( 'Настройки страницы', 'art-theme' ),
-				'controlLabel'   => __( 'Шаблон', 'art-theme' ),
-				'hideTitleLabel' => __( 'Скрыть заголовок страницы', 'art-theme' ),
-				'hideTitleHelp'  => __( 'Заголовок не выводится на сайте, но остаётся в редакторе.', 'art-theme' ),
+				'choices'              => $choices,
+				'supportedPostTypes'   => self::get_page_layout_post_types(),
+				'defaultHelp'          => __( 'Наследует шаблон «Контентный блок» из настроек темы.', 'art-theme' ),
+				'panelTitle'           => __( 'Шаблон страницы', 'art-theme' ),
+				'controlLabel'         => __( 'Шаблон', 'art-theme' ),
+				'hideTitleLabel'       => __( 'Скрыть заголовок страницы', 'art-theme' ),
+				'hideTitleHelp'        => __( 'Заголовок не выводится на сайте, но остаётся в редакторе.', 'art-theme' ),
+				'hideTitlePostTypes'   => array( 'page' ),
 			)
 		);
 	}
 
 	/**
-	 * Whether the current admin screen is the block editor for a page.
+	 * Post types that use the shared page-style boxed template on singular views.
+	 *
+	 * @return array<int, string>
+	 */
+	public static function get_page_layout_post_types() {
+		$post_types = array( 'page' );
+
+		foreach ( get_post_types( array( 'public' => true ), 'names' ) as $post_type ) {
+			if ( art_theme_uses_page_template_layout( $post_type ) ) {
+				$post_types[] = $post_type;
+			}
+		}
+
+		return array_values( array_unique( $post_types ) );
+	}
+
+	/**
+	 * Whether the current admin screen is the block editor for a page-layout post type.
 	 *
 	 * @return bool
 	 */
-	private static function is_page_block_editor_screen() {
+	private static function is_page_layout_block_editor_screen() {
 		if ( ! is_admin() ) {
 			return false;
 		}
@@ -337,18 +335,30 @@ class Art_Theme_Page_Settings {
 		if ( isset( $_GET['post'] ) ) {
 			$post = get_post( (int) wp_unslash( $_GET['post'] ) );
 
-			if ( $post instanceof WP_Post && 'page' === $post->post_type ) {
+			if ( $post instanceof WP_Post && in_array( $post->post_type, self::get_page_layout_post_types(), true ) ) {
 				return use_block_editor_for_post( $post );
 			}
 		}
 
-		if ( isset( $_GET['post_type'] ) && 'page' === sanitize_key( wp_unslash( $_GET['post_type'] ) ) ) {
-			return use_block_editor_for_post_type( 'page' );
+		if ( isset( $_GET['post_type'] ) ) {
+			$post_type = sanitize_key( wp_unslash( $_GET['post_type'] ) );
+
+			if ( in_array( $post_type, self::get_page_layout_post_types(), true ) ) {
+				return use_block_editor_for_post_type( $post_type );
+			}
 		}
 
 		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
 
-		return $screen && 'page' === $screen->post_type;
+		return $screen && in_array( $screen->post_type, self::get_page_layout_post_types(), true );
+	}
+
+	/**
+	 * @deprecated 1.0.4 Use is_page_layout_block_editor_screen().
+	 * @return bool
+	 */
+	private static function is_page_block_editor_screen() {
+		return self::is_page_layout_block_editor_screen();
 	}
 
 	/**
@@ -358,13 +368,7 @@ class Art_Theme_Page_Settings {
 	 * @return string
 	 */
 	public static function sanitize_template_variant( $value ) {
-		$value = sanitize_key( (string) $value );
-
-		if ( in_array( $value, self::TEMPLATE_VARIANTS, true ) ) {
-			return $value;
-		}
-
-		return 'boxed';
+		return Art_Theme_Content_Template::sanitize_template_variant( $value );
 	}
 
 	/**
@@ -378,7 +382,7 @@ class Art_Theme_Page_Settings {
 			$settings = self::get();
 		}
 
-		return 'full-width' === self::sanitize_template_variant( $settings['template_variant'] ?? 'boxed' );
+		return Art_Theme_Content_Template::is_full_width_template( $settings );
 	}
 
 	/**
@@ -428,16 +432,6 @@ class Art_Theme_Page_Settings {
 	 */
 	public static function sanitize_boxed_padding_inline( $value ) {
 		return Art_Theme_Single_Settings::sanitize_boxed_padding_inline( $value );
-	}
-
-	/**
-	 * Sanitize top spacing for pages.
-	 *
-	 * @param mixed $value Raw value.
-	 * @return int
-	 */
-	public static function sanitize_page_top_spacing( $value ) {
-		return max( 0, min( 160, (int) $value ) );
 	}
 
 	/**
@@ -495,12 +489,11 @@ class Art_Theme_Page_Settings {
 
 		return array(
 			'template_variant'     => self::sanitize_template_variant( $merged['template_variant'] ?? 'boxed' ),
-			'page_width'           => max( 600, min( 1400, (int) ( $merged['page_width'] ?? 850 ) ) ),
+			'page_width'           => max( 600, min( 1400, (int) ( $merged['page_width'] ?? Art_Theme_Content_Template::CONTENT_WIDTH_DEFAULT ) ) ),
 			'boxed_border_radius'  => self::sanitize_boxed_border_radius( $merged['boxed_border_radius'] ?? 10 ),
 			'boxed_shadow'         => self::sanitize_boxed_shadow( $merged['boxed_shadow'] ?? 'medium' ),
 			'boxed_padding_block'  => self::sanitize_boxed_padding_block( $merged['boxed_padding_block'] ?? 32 ),
 			'boxed_padding_inline' => self::sanitize_boxed_padding_inline( $merged['boxed_padding_inline'] ?? 24 ),
-			'page_top_spacing'     => self::sanitize_page_top_spacing( $merged['page_top_spacing'] ?? self::CONTENT_TOP_SPACING_DEFAULT ),
 		);
 	}
 

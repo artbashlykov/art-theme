@@ -239,7 +239,7 @@ class Art_Theme_Customizer {
 			'art_theme_page',
 			array(
 				'title'       => __( 'Настройка страницы', 'art-theme' ),
-				'description' => __( 'Шаблон статических страниц: вариант оформления, ширина и отступы.', 'art-theme' ),
+				'description' => __( 'Шаблон статических страниц и произвольных типов записей с макетом страницы: вариант оформления, ширина и внутренние отступы.', 'art-theme' ),
 				'priority'    => 200,
 			)
 		);
@@ -308,7 +308,7 @@ class Art_Theme_Customizer {
 			'art_theme_header_template',
 			array(
 				'title'       => __( 'Шаблон шапки', 'art-theme' ),
-				'description' => __( 'Вариант оформления и размеры шапки.', 'art-theme' ),
+				'description' => __( 'Вариант оформления и размеры шапки. Отступы сверху и снизу действуют на всех страницах сайта.', 'art-theme' ),
 				'panel'       => 'art_theme_header',
 				'priority'    => 10,
 			)
@@ -414,7 +414,7 @@ class Art_Theme_Customizer {
 			'art_theme_header_show_logo',
 			'art_theme_header_layout',
 			__( 'Показывать логотип', 'art-theme' ),
-			1
+			! empty( $defaults['show_logo'] )
 		);
 
 		self::add_checkbox_control(
@@ -423,7 +423,7 @@ class Art_Theme_Customizer {
 			'art_theme_header_show_title',
 			'art_theme_header_layout',
 			__( 'Показывать название', 'art-theme' ),
-			1
+			! empty( $defaults['show_title'] )
 		);
 
 		self::add_checkbox_control(
@@ -432,7 +432,7 @@ class Art_Theme_Customizer {
 			'art_theme_header_show_tagline',
 			'art_theme_header_layout',
 			__( 'Показывать короткое описание', 'art-theme' ),
-			0
+			! empty( $defaults['show_tagline'] )
 		);
 
 		self::add_checkbox_control(
@@ -441,7 +441,7 @@ class Art_Theme_Customizer {
 			'art_theme_header_show_menu',
 			'art_theme_header_layout',
 			__( 'Показывать меню', 'art-theme' ),
-			1
+			! empty( $defaults['show_menu'] )
 		);
 
 		self::add_checkbox_control(
@@ -450,7 +450,7 @@ class Art_Theme_Customizer {
 			'art_theme_header_show_button',
 			'art_theme_header_layout',
 			__( 'Показывать кнопку', 'art-theme' ),
-			0
+			! empty( $defaults['show_button'] )
 		);
 
 		self::add_text_control(
@@ -470,7 +470,7 @@ class Art_Theme_Customizer {
 			'art_theme_header_layout',
 			__( 'Ссылка кнопки', 'art-theme' ),
 			$defaults['button_url'],
-			'esc_url_raw'
+			array( 'Art_Theme_Header_Settings', 'sanitize_button_url' )
 		);
 
 		self::add_checkbox_control(
@@ -1089,7 +1089,7 @@ class Art_Theme_Customizer {
 			'art_theme_page_template',
 			array(
 				'title'       => __( 'Шаблон страницы', 'art-theme' ),
-				'description' => __( 'Вариант оформления, ширина и отступы статической страницы.', 'art-theme' ),
+				'description' => __( 'Вариант оформления, ширина и внутренние отступы страниц и произвольных типов записей. По умолчанию — «Контентный блок» с теми же параметрами, что у записей блога.', 'art-theme' ),
 				'panel'       => 'art_theme_page',
 				'priority'    => 10,
 			)
@@ -1115,18 +1115,6 @@ class Art_Theme_Customizer {
 			(int) $defaults['page_width'],
 			600,
 			1400
-		);
-
-		self::add_number_control(
-			$wp_customize,
-			$option_key . '[page_top_spacing]',
-			'art_theme_page_top_spacing',
-			'art_theme_page_template',
-			__( 'Верхний отступ страницы (px)', 'art-theme' ),
-			(int) $defaults['page_top_spacing'],
-			0,
-			160,
-			array( 'Art_Theme_Page_Settings', 'sanitize_page_top_spacing' )
 		);
 
 		self::add_number_control(
@@ -1194,7 +1182,7 @@ class Art_Theme_Customizer {
 			'art_theme_single_template',
 			array(
 				'title'       => __( 'Шаблон записи', 'art-theme' ),
-				'description' => __( 'Вариант оформления, ширина и отступы одиночной записи.', 'art-theme' ),
+				'description' => __( 'Вариант оформления, ширина и внутренние отступы одиночной записи. По умолчанию — «Контентный блок» с теми же параметрами, что у страниц и произвольных типов записей.', 'art-theme' ),
 				'panel'       => 'art_theme_single',
 				'priority'    => 10,
 			)
@@ -1220,17 +1208,6 @@ class Art_Theme_Customizer {
 			(int) $defaults['post_width'],
 			600,
 			1400
-		);
-
-		self::add_number_control(
-			$wp_customize,
-			$option_key . '[post_top_spacing]',
-			'art_theme_single_post_top_spacing',
-			'art_theme_single_template',
-			__( 'Верхний отступ страницы (px)', 'art-theme' ),
-			(int) $defaults['post_top_spacing'],
-			0,
-			160
 		);
 
 		self::add_number_control(

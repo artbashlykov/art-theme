@@ -13,10 +13,6 @@
 	overflow: hidden;
 }
 
-.art-theme-canvas--page:not(.art-theme-canvas--page-full) .art-theme-shell {
-	margin-top: var(--art-theme-page-top-spacing, 16px);
-}
-
 /* Static page — variant 2: full-width white background. */
 .art-theme-canvas--page-full {
 	background: var(--art-theme-surface);

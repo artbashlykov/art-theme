@@ -14,7 +14,7 @@ class Art_Theme_Blog_Settings {
 
 	const OPTION_KEY = 'art_theme_blog_settings';
 
-	const BLOG_BOTTOM_SPACING_DEFAULT = 16;
+	const BLOG_BOTTOM_SPACING_DEFAULT = Art_Theme_Spacing::SECTION_SPACING_DEFAULT;
 
 	/**
 	 * Register hooks.

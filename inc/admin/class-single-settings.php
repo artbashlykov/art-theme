@@ -14,8 +14,6 @@ class Art_Theme_Single_Settings {
 
 	const OPTION_KEY = 'art_theme_single_settings';
 
-	const CONTENT_TOP_SPACING_DEFAULT = 16;
-
 	/**
 	 * Single post header layout item slugs.
 	 */
@@ -39,20 +37,17 @@ class Art_Theme_Single_Settings {
 	 * @return array<string, mixed>
 	 */
 	public static function get_defaults() {
-		return array(
-			'template_variant'     => 'boxed',
-			'post_width'           => 850,
-			'boxed_border_radius'  => 10,
-			'boxed_shadow'         => 'medium',
-			'boxed_padding_block'  => 32,
-			'boxed_padding_inline' => 24,
-			'post_top_spacing'     => self::CONTENT_TOP_SPACING_DEFAULT,
-			'cover_aspect_ratio'   => '16-9',
-			'show_thumbnail'     => true,
-			'show_date'          => true,
-			'show_category'      => false,
-			'show_reading_time'  => true,
-			'meta_order'         => array( 'image', 'title', 'meta' ),
+		return array_merge(
+			Art_Theme_Content_Template::get_boxed_layout_defaults(),
+			array(
+				'post_width'         => Art_Theme_Content_Template::CONTENT_WIDTH_DEFAULT,
+				'cover_aspect_ratio' => '16-9',
+				'show_thumbnail'     => true,
+				'show_date'          => true,
+				'show_category'      => false,
+				'show_reading_time'  => true,
+				'meta_order'         => array( 'image', 'title', 'meta' ),
+			)
 		);
 	}
 
@@ -93,7 +88,6 @@ class Art_Theme_Single_Settings {
 		$settings['boxed_shadow']         = self::sanitize_boxed_shadow( $settings['boxed_shadow'] ?? 'medium' );
 		$settings['boxed_padding_block']  = self::sanitize_boxed_padding_block( $settings['boxed_padding_block'] ?? 32 );
 		$settings['boxed_padding_inline'] = self::sanitize_boxed_padding_inline( $settings['boxed_padding_inline'] ?? 24 );
-		$settings['post_top_spacing']     = self::sanitize_post_top_spacing( $settings['post_top_spacing'] ?? self::CONTENT_TOP_SPACING_DEFAULT );
 		$settings['cover_aspect_ratio']   = self::sanitize_cover_aspect_ratio( $settings['cover_aspect_ratio'] ?? '16-9' );
 		$settings['meta_order']         = self::sanitize_meta_order( $settings['meta_order'] ?? $defaults['meta_order'] );
 
@@ -121,10 +115,7 @@ class Art_Theme_Single_Settings {
 	 * @return array<string, string>
 	 */
 	public static function get_template_variant_choices() {
-		return array(
-			'boxed'      => __( 'Контентный блок', 'art-theme' ),
-			'full-width' => __( 'Фон на всю ширину', 'art-theme' ),
-		);
+		return Art_Theme_Content_Template::get_template_variant_choices();
 	}
 
 	/**
@@ -134,13 +125,7 @@ class Art_Theme_Single_Settings {
 	 * @return string
 	 */
 	public static function sanitize_template_variant( $value ) {
-		$value = sanitize_key( (string) $value );
-
-		if ( in_array( $value, self::TEMPLATE_VARIANTS, true ) ) {
-			return $value;
-		}
-
-		return 'boxed';
+		return Art_Theme_Content_Template::sanitize_template_variant( $value );
 	}
 
 	/**
@@ -154,7 +139,7 @@ class Art_Theme_Single_Settings {
 			$settings = self::get();
 		}
 
-		return 'full-width' === self::sanitize_template_variant( $settings['template_variant'] ?? 'boxed' );
+		return Art_Theme_Content_Template::is_full_width_template( $settings );
 	}
 
 	/**
@@ -245,16 +230,6 @@ class Art_Theme_Single_Settings {
 	 */
 	public static function sanitize_boxed_padding_inline( $value ) {
 		return max( 0, min( 120, (int) $value ) );
-	}
-
-	/**
-	 * Sanitize top spacing for single post pages.
-	 *
-	 * @param mixed $value Raw value.
-	 * @return int
-	 */
-	public static function sanitize_post_top_spacing( $value ) {
-		return max( 0, min( 160, (int) $value ) );
 	}
 
 	/**
@@ -496,12 +471,11 @@ class Art_Theme_Single_Settings {
 
 		return array(
 			'template_variant'    => self::sanitize_template_variant( $merged['template_variant'] ?? 'boxed' ),
-			'post_width'          => max( 600, min( 1400, (int) ( $merged['post_width'] ?? 850 ) ) ),
+			'post_width'          => max( 600, min( 1400, (int) ( $merged['post_width'] ?? Art_Theme_Content_Template::CONTENT_WIDTH_DEFAULT ) ) ),
 			'boxed_border_radius' => self::sanitize_boxed_border_radius( $merged['boxed_border_radius'] ?? 10 ),
 			'boxed_shadow'         => self::sanitize_boxed_shadow( $merged['boxed_shadow'] ?? 'medium' ),
 			'boxed_padding_block'  => self::sanitize_boxed_padding_block( $merged['boxed_padding_block'] ?? 32 ),
 			'boxed_padding_inline' => self::sanitize_boxed_padding_inline( $merged['boxed_padding_inline'] ?? 24 ),
-			'post_top_spacing'     => self::sanitize_post_top_spacing( $merged['post_top_spacing'] ?? self::CONTENT_TOP_SPACING_DEFAULT ),
 			'cover_aspect_ratio'  => self::sanitize_cover_aspect_ratio( $merged['cover_aspect_ratio'] ?? '16-9' ),
 			'show_thumbnail'     => ! empty( $merged['show_thumbnail'] ),
 			'show_date'          => ! empty( $merged['show_date'] ),

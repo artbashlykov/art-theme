@@ -63,11 +63,11 @@ class Art_Theme_Header_Settings {
 			'header_border_radius'       => 10,
 			'show_logo'     => true,
 			'show_title'    => true,
-			'show_tagline'  => false,
+			'show_tagline'  => true,
 			'show_menu'     => true,
-			'show_button'   => false,
-			'button_label'         => __( 'Связаться', 'art-theme' ),
-			'button_url'           => '',
+			'show_button'   => true,
+			'button_label'         => __( 'Личный кабинет', 'art-theme' ),
+			'button_url'           => '#',
 			'button_open_new_tab'  => true,
 			'header_menu_id' => 0,
 		);
@@ -105,7 +105,7 @@ class Art_Theme_Header_Settings {
 		$settings['header_fixed_extra_inline']  = self::sanitize_header_fixed_extra_inline( $settings['header_fixed_extra_inline'] ?? $defaults['header_fixed_extra_inline'] );
 		$settings['header_border_radius']       = self::sanitize_header_border_radius( $settings['header_border_radius'] ?? $defaults['header_border_radius'] );
 		$settings['button_label'] = sanitize_text_field( (string) ( $settings['button_label'] ?? $defaults['button_label'] ) );
-		$settings['button_url']   = esc_url_raw( (string) ( $settings['button_url'] ?? '' ) );
+		$settings['button_url']   = self::sanitize_button_url( $settings['button_url'] ?? $defaults['button_url'] );
 		$settings['header_menu_id'] = self::sanitize_header_menu_id( $settings['header_menu_id'] ?? $defaults['header_menu_id'] );
 
 		if ( '' === trim( $settings['button_label'] ) ) {
@@ -635,6 +635,22 @@ class Art_Theme_Header_Settings {
 	}
 
 	/**
+	 * Sanitize header button URL (allows placeholder "#").
+	 *
+	 * @param mixed $value Raw value.
+	 * @return string
+	 */
+	public static function sanitize_button_url( $value ) {
+		$value = trim( (string) $value );
+
+		if ( '#' === $value ) {
+			return '#';
+		}
+
+		return esc_url_raw( $value );
+	}
+
+	/**
 	 * Sanitize saved settings.
 	 *
 	 * @param mixed $input Raw input.
@@ -670,7 +686,7 @@ class Art_Theme_Header_Settings {
 			'show_menu'    => ! empty( $merged['show_menu'] ),
 			'show_button'  => ! empty( $merged['show_button'] ),
 			'button_label'        => sanitize_text_field( (string) ( $merged['button_label'] ?? $defaults['button_label'] ) ),
-			'button_url'          => esc_url_raw( (string) ( $merged['button_url'] ?? '' ) ),
+			'button_url'          => self::sanitize_button_url( $merged['button_url'] ?? $defaults['button_url'] ),
 			'button_open_new_tab' => ! empty( $merged['button_open_new_tab'] ),
 			'header_menu_id'      => self::sanitize_header_menu_id( $merged['header_menu_id'] ?? $defaults['header_menu_id'] ),
 		);

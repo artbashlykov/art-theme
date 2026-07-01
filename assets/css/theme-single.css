@@ -13,10 +13,6 @@
 	overflow: hidden;
 }
 
-.art-theme-canvas--single:not(.art-theme-canvas--single-full) .art-theme-shell {
-	margin-top: var(--art-theme-single-top-spacing, 16px);
-}
-
 /* Single post — variant 2: full-width white background. */
 .art-theme-canvas--single-full {
 	background: var(--art-theme-surface);

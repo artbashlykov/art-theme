@@ -119,7 +119,6 @@ function art_theme_enqueue_assets() {
 				'--art-theme-single-gutter: %1$s',
 				Art_Theme_Single_Settings::is_full_width_template( $single_settings ) ? '1.5rem' : '0px'
 			),
-			sprintf( '--art-theme-single-top-spacing: %1$dpx', (int) $single_settings['post_top_spacing'] ),
 		);
 
 		if ( ! Art_Theme_Single_Settings::is_full_width_template( $single_settings ) ) {
@@ -148,7 +147,6 @@ function art_theme_enqueue_assets() {
 				'--art-theme-page-gutter: %1$s',
 				Art_Theme_Page_Settings::is_full_width_template( $page_settings ) ? '1.5rem' : '0px'
 			),
-			sprintf( '--art-theme-page-top-spacing: %1$dpx', (int) $page_settings['page_top_spacing'] ),
 		);
 
 		if ( ! Art_Theme_Page_Settings::is_full_width_template( $page_settings ) ) {

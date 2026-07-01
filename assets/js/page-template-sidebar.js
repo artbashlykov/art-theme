@@ -16,22 +16,21 @@
 	var useEntityProp = wp.coreData && wp.coreData.useEntityProp;
 	var createElement = wp.element && wp.element.createElement;
 	var META_HIDE_TITLE = 'art_theme_page_hide_title';
+	var supportedPostTypes = Array.isArray( config.supportedPostTypes ) ? config.supportedPostTypes : [ 'page' ];
+	var hideTitlePostTypes = Array.isArray( config.hideTitlePostTypes ) ? config.hideTitlePostTypes : [ 'page' ];
 
-	if ( ! PluginDocumentSettingPanel || ! SelectControl || ! ToggleControl || ! useSelect || ! useEntityProp || ! createElement ) {
-		return;
-	}
-
-	function usePageMeta() {
+	function usePageLayoutMeta() {
 		var postType = useSelect( function ( select ) {
 			return select( 'core/editor' ).getCurrentPostType();
 		}, [] );
-		var metaState = useEntityProp( 'postType', 'page', 'meta' );
+		var metaState = useEntityProp( 'postType', postType, 'meta' );
 
-		if ( 'page' !== postType ) {
+		if ( -1 === supportedPostTypes.indexOf( postType ) ) {
 			return null;
 		}
 
 		return {
+			postType: postType,
 			meta: metaState[ 0 ] || {},
 			setMeta: metaState[ 1 ],
 			hideTitle: !!( metaState[ 0 ] && metaState[ 0 ][ META_HIDE_TITLE ] ),
@@ -45,7 +44,7 @@
 	}
 
 	function PageTemplatePanel() {
-		var pageMeta = usePageMeta();
+		var pageMeta = usePageLayoutMeta();
 
 		if ( ! pageMeta ) {
 			return null;
@@ -53,6 +52,7 @@
 
 		var templateVariant = pageMeta.meta.art_theme_page_template_variant || 'default';
 		var helpText = 'default' === templateVariant ? config.defaultHelp : '';
+		var showHideTitle = -1 !== hideTitlePostTypes.indexOf( pageMeta.postType );
 
 		return createElement(
 			PluginDocumentSettingPanel,
@@ -73,18 +73,20 @@
 					pageMeta.setMeta( next );
 				},
 			} ),
-			createElement(
-				'div',
-				{ className: 'art-theme-page-template-panel__hide-title' },
-				createElement( ToggleControl, {
-					label: config.hideTitleLabel,
-					help: config.hideTitleHelp,
-					checked: pageMeta.hideTitle,
-					onChange: function ( value ) {
-						setHideTitle( pageMeta.meta, pageMeta.setMeta, value );
-					},
-				} )
-			)
+			showHideTitle
+				? createElement(
+					'div',
+					{ className: 'art-theme-page-template-panel__hide-title' },
+					createElement( ToggleControl, {
+						label: config.hideTitleLabel,
+						help: config.hideTitleHelp,
+						checked: pageMeta.hideTitle,
+						onChange: function ( value ) {
+							setHideTitle( pageMeta.meta, pageMeta.setMeta, value );
+						},
+					} )
+				)
+				: null
 		);
 	}
 
