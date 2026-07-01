@@ -45,7 +45,7 @@ class Art_Theme_Header_Settings {
 		add_action( 'init', array( __CLASS__, 'maybe_migrate_header_menu_location' ), 20 );
 		add_action( 'after_switch_theme', array( __CLASS__, 'maybe_migrate_header_menu_location' ) );
 		add_action( 'customize_save_after', array( __CLASS__, 'normalize_after_customizer_save' ) );
-		add_filter( 'theme_mod_nav_menu_locations', array( __CLASS__, 'filter_nav_menu_locations_for_preview' ) );
+		add_filter( 'theme_mod_nav_menu_locations', array( __CLASS__, 'filter_nav_menu_locations_for_preview' ), 20 );
 	}
 
 	/**
@@ -468,7 +468,7 @@ class Art_Theme_Header_Settings {
 	}
 
 	/**
-	 * Override Primary Menu location in Customizer preview from header_menu_id.
+	 * Apply unsaved Customizer menu assignments to the Primary Menu location.
 	 *
 	 * @param mixed $locations Nav menu locations theme mod.
 	 * @return array<string, int>
@@ -480,6 +480,20 @@ class Art_Theme_Header_Settings {
 
 		if ( ! is_array( $locations ) ) {
 			$locations = array();
+		}
+
+		$location_post_value = self::get_customizer_post_value_nav_menu_location_id();
+
+		if ( null !== $location_post_value ) {
+			$menu_id = self::resolve_menu_id_for_preview( $location_post_value );
+
+			if ( 0 !== $menu_id ) {
+				$locations[ self::MENU_LOCATION ] = $menu_id;
+			} else {
+				unset( $locations[ self::MENU_LOCATION ] );
+			}
+
+			return $locations;
 		}
 
 		$menu_id = self::get_preview_header_menu_id( $locations );
@@ -502,14 +516,16 @@ class Art_Theme_Header_Settings {
 			return 0;
 		}
 
+		$location_post_value = self::get_customizer_post_value_nav_menu_location_id();
+
+		if ( null !== $location_post_value ) {
+			return self::resolve_menu_id_for_preview( $location_post_value );
+		}
+
 		$post_value = self::get_customizer_post_value_header_menu_id();
 
 		if ( null !== $post_value ) {
-			$menu_id = self::resolve_menu_id_for_preview( $post_value );
-
-			if ( 0 !== $menu_id ) {
-				return $menu_id;
-			}
+			return self::resolve_menu_id_for_preview( $post_value );
 		}
 
 		if ( is_array( $preview_locations ) && array_key_exists( self::MENU_LOCATION, $preview_locations ) ) {
@@ -543,6 +559,36 @@ class Art_Theme_Header_Settings {
 		}
 
 		return self::resolve_menu_id_for_preview( $locations[ self::MENU_LOCATION ] );
+	}
+
+	/**
+	 * Read unsaved Primary Menu location from the Customizer manager.
+	 *
+	 * @return mixed|null Null when the setting is unchanged or unavailable.
+	 */
+	private static function get_customizer_post_value_nav_menu_location_id() {
+		if ( ! is_customize_preview() ) {
+			return null;
+		}
+
+		global $wp_customize;
+
+		if ( ! $wp_customize instanceof WP_Customize_Manager ) {
+			return null;
+		}
+
+		$setting_id = 'nav_menu_locations[' . self::MENU_LOCATION . ']';
+		$setting    = $wp_customize->get_setting( $setting_id );
+
+		if ( ! $setting instanceof WP_Customize_Setting ) {
+			return null;
+		}
+
+		if ( ! $setting->check_capabilities() ) {
+			return null;
+		}
+
+		return $wp_customize->post_value( $setting, null );
 	}
 
 	/**
@@ -640,9 +686,21 @@ class Art_Theme_Header_Settings {
 			return false;
 		}
 
+		if ( is_customize_preview() && $menu_id < 0 ) {
+			return true;
+		}
+
 		$items = wp_get_nav_menu_items( $menu_id );
 
-		return is_array( $items ) && ! empty( $items );
+		if ( is_array( $items ) && ! empty( $items ) ) {
+			return true;
+		}
+
+		if ( is_customize_preview() ) {
+			return (bool) wp_get_nav_menu_object( $menu_id );
+		}
+
+		return false;
 	}
 
 	/**
