@@ -10,9 +10,17 @@ defined( 'ABSPATH' ) || exit;
 $settings = ( isset( $args['blog_settings'] ) && is_array( $args['blog_settings'] ) )
 	? $args['blog_settings']
 	: Art_Theme_Blog_Settings::get();
+
+$post_id         = get_the_ID();
+$archive_image_id = art_theme_get_archive_post_image_id( $post_id );
+$card_classes    = array( 'art-theme-archive-card' );
+
+if ( ! empty( $settings['show_thumbnail'] ) && ! $archive_image_id ) {
+	$card_classes[] = 'art-theme-archive-card--no-image';
+}
 ?>
 
-<article id="post-<?php the_ID(); ?>" <?php post_class( 'art-theme-archive-card' ); ?>>
+<article id="post-<?php the_ID(); ?>" <?php post_class( $card_classes ); ?>>
 	<?php if ( $settings['show_thumbnail'] ) : ?>
 		<?php get_template_part( 'template-parts/post', 'thumbnail' ); ?>
 	<?php endif; ?>

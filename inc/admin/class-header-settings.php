@@ -482,9 +482,9 @@ class Art_Theme_Header_Settings {
 			$locations = array();
 		}
 
-		$menu_id = self::get_preview_header_menu_id();
+		$menu_id = self::get_preview_header_menu_id( $locations );
 
-		if ( $menu_id > 0 ) {
+		if ( 0 !== $menu_id ) {
 			$locations[ self::MENU_LOCATION ] = $menu_id;
 		}
 
@@ -494,9 +494,32 @@ class Art_Theme_Header_Settings {
 	/**
 	 * Header menu ID from Customizer preview state.
 	 *
+	 * @param array<string, int>|null $preview_locations Incoming preview locations from the Customizer.
 	 * @return int
 	 */
-	public static function get_preview_header_menu_id() {
+	public static function get_preview_header_menu_id( $preview_locations = null ) {
+		if ( ! is_customize_preview() ) {
+			return 0;
+		}
+
+		$post_value = self::get_customizer_post_value_header_menu_id();
+
+		if ( null !== $post_value ) {
+			$menu_id = self::resolve_menu_id_for_preview( $post_value );
+
+			if ( 0 !== $menu_id ) {
+				return $menu_id;
+			}
+		}
+
+		if ( is_array( $preview_locations ) && array_key_exists( self::MENU_LOCATION, $preview_locations ) ) {
+			$menu_id = self::resolve_menu_id_for_preview( $preview_locations[ self::MENU_LOCATION ] );
+
+			if ( 0 !== $menu_id ) {
+				return $menu_id;
+			}
+		}
+
 		$stored   = get_option( self::OPTION_KEY, array() );
 		$defaults = self::get_defaults();
 
@@ -504,13 +527,75 @@ class Art_Theme_Header_Settings {
 			return 0;
 		}
 
-		$menu_id = self::sanitize_header_menu_id( $stored['header_menu_id'] ?? $defaults['header_menu_id'] );
+		return self::resolve_menu_id_for_preview( $stored['header_menu_id'] ?? $defaults['header_menu_id'] );
+	}
 
-		if ( $menu_id > 0 ) {
+	/**
+	 * Menu ID currently assigned to the header location (respects Customizer preview).
+	 *
+	 * @return int
+	 */
+	public static function get_assigned_header_menu_id() {
+		$locations = get_nav_menu_locations();
+
+		if ( ! is_array( $locations ) || empty( $locations[ self::MENU_LOCATION ] ) ) {
+			return 0;
+		}
+
+		return self::resolve_menu_id_for_preview( $locations[ self::MENU_LOCATION ] );
+	}
+
+	/**
+	 * Read unsaved header_menu_id from the Customizer manager.
+	 *
+	 * @return mixed|null Null when the setting is unchanged or unavailable.
+	 */
+	private static function get_customizer_post_value_header_menu_id() {
+		if ( ! is_customize_preview() ) {
+			return null;
+		}
+
+		global $wp_customize;
+
+		if ( ! $wp_customize instanceof WP_Customize_Manager ) {
+			return null;
+		}
+
+		$setting_id = self::OPTION_KEY . '[header_menu_id]';
+
+		if ( ! $wp_customize->get_setting( $setting_id ) ) {
+			return null;
+		}
+
+		if ( ! $wp_customize->get_setting( $setting_id )->check_capabilities() ) {
+			return null;
+		}
+
+		return $wp_customize->post_value( $setting_id, null );
+	}
+
+	/**
+	 * Resolve a menu ID for front-end / preview rendering.
+	 *
+	 * @param mixed $value Raw menu ID.
+	 * @return int
+	 */
+	private static function resolve_menu_id_for_preview( $value ) {
+		if ( self::HEADER_MENU_CREATE_VALUE === (string) $value ) {
+			return 0;
+		}
+
+		$menu_id = (int) $value;
+
+		if ( 0 === $menu_id ) {
+			return 0;
+		}
+
+		if ( is_customize_preview() && $menu_id < 0 ) {
 			return $menu_id;
 		}
 
-		return self::get_primary_location_menu_id();
+		return self::sanitize_header_menu_id( $menu_id );
 	}
 
 	/**
@@ -548,13 +633,9 @@ class Art_Theme_Header_Settings {
 	public static function header_menu_is_available( $settings = null ) {
 		unset( $settings );
 
-		if ( ! has_nav_menu( self::MENU_LOCATION ) ) {
-			return false;
-		}
+		$menu_id = self::get_assigned_header_menu_id();
 
-		$menu_id = self::get_primary_location_menu_id();
-
-		if ( $menu_id <= 0 ) {
+		if ( 0 === $menu_id ) {
 			return false;
 		}
 

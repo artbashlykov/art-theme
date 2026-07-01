@@ -74,6 +74,17 @@ try {
 		throw new RuntimeException( 'Expected empty preview menu ID on fresh install.' );
 	}
 
+	$placeholder_id = -42;
+	$resolved       = Art_Theme_Header_Settings::get_preview_header_menu_id(
+		array(
+			Art_Theme_Header_Settings::MENU_LOCATION => $placeholder_id,
+		)
+	);
+
+	if ( $placeholder_id !== $resolved ) {
+		throw new RuntimeException( 'Expected Customizer placeholder menu ID in preview locations.' );
+	}
+
 	echo "OK: customize preview nav menu lookup completed without recursion.\n";
 	exit( 0 );
 } catch ( Throwable $exception ) {
