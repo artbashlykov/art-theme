@@ -4,7 +4,7 @@ Tags: one-column, custom-menu, custom-logo, featured-images, translation-ready, 
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.5
+Stable tag: 1.0.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,6 +46,10 @@ No. The theme is intentionally one-column.
 No. The theme works standalone. If ART Starter is active, footer social icons can use the shared icon registry.
 
 == Changelog ==
+
+= 1.0.6 =
+* Исправлены PHP Warning в Customizer при чтении несохранённого меню шапки.
+* Архив: у карточек без миниатюры тёмный только блок изображения, не вся карточка.
 
 = 1.0.5 =
 * Customizer preview: header menu visible before Publish (unsaved menu assignments).

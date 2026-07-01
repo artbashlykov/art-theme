@@ -562,16 +562,17 @@ class Art_Theme_Header_Settings {
 		}
 
 		$setting_id = self::OPTION_KEY . '[header_menu_id]';
+		$setting    = $wp_customize->get_setting( $setting_id );
 
-		if ( ! $wp_customize->get_setting( $setting_id ) ) {
+		if ( ! $setting instanceof WP_Customize_Setting ) {
 			return null;
 		}
 
-		if ( ! $wp_customize->get_setting( $setting_id )->check_capabilities() ) {
+		if ( ! $setting->check_capabilities() ) {
 			return null;
 		}
 
-		return $wp_customize->post_value( $setting_id, null );
+		return $wp_customize->post_value( $setting, null );
 	}
 
 	/**
