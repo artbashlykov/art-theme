@@ -13,6 +13,15 @@ defined( 'ABSPATH' ) || exit;
 class Art_Theme_Social_Icons {
 
 	/**
+	 * Footer icons loaded from assets/icons/social/ (slug => filename).
+	 *
+	 * @var array<string, string>
+	 */
+	private static $social_icon_files = array(
+		'vk' => 'vk.svg',
+	);
+
+	/**
 	 * Available social networks for the footer picker.
 	 *
 	 * @return array<string, string>
@@ -39,18 +48,17 @@ class Art_Theme_Social_Icons {
 			return '';
 		}
 
+		$theme_icon = self::get_theme_icon_svg( $network );
+		if ( '' !== $theme_icon ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from internal registry.
+			return '<span class="' . esc_attr( $wrapper_class ) . '" aria-hidden="true">' . $theme_icon . '</span>';
+		}
+
 		if ( class_exists( 'Art_Starter_Icons' ) ) {
 			$icon  = Art_Starter_Icons::get( $network );
 			$label = is_array( $icon ) ? (string) ( $icon['label'] ?? '' ) : '';
 
 			return Art_Starter_Icons::render_or_letter( $network, $label, $wrapper_class );
-		}
-
-		$fallback = self::get_fallback_icons();
-
-		if ( isset( $fallback[ $network ] ) ) {
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from internal registry.
-			return '<span class="' . esc_attr( $wrapper_class ) . '" aria-hidden="true">' . $fallback[ $network ] . '</span>';
 		}
 
 		$label = self::get_fallback_networks()[ $network ] ?? $network;
@@ -140,6 +148,61 @@ class Art_Theme_Social_Icons {
 	}
 
 	/**
+	 * Theme-owned SVG for the footer (file or inline registry).
+	 *
+	 * @param string $network Network slug.
+	 * @return string
+	 */
+	private static function get_theme_icon_svg( $network ) {
+		if ( isset( self::$social_icon_files[ $network ] ) ) {
+			$file_svg = self::load_social_icon_file( self::$social_icon_files[ $network ] );
+			if ( '' !== $file_svg ) {
+				return $file_svg;
+			}
+		}
+
+		$icons = self::get_fallback_icons();
+
+		return $icons[ $network ] ?? '';
+	}
+
+	/**
+	 * Load SVG icon from assets/icons/social/.
+	 *
+	 * @param string $filename SVG filename.
+	 * @return string
+	 */
+	private static function load_social_icon_file( $filename ) {
+		$filename = basename( (string) $filename );
+		if ( ! preg_match( '/\.svg$/i', $filename ) ) {
+			return '';
+		}
+
+		$path = ART_THEME_DIR . '/assets/icons/social/' . $filename;
+		if ( ! is_readable( $path ) ) {
+			return '';
+		}
+
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local theme asset.
+		$svg = (string) file_get_contents( $path );
+		if ( '' === trim( $svg ) ) {
+			return '';
+		}
+
+		$svg = preg_replace( '/<\?xml.*?\?>\s*/is', '', $svg );
+		$svg = preg_replace( '/<!DOCTYPE.*?>\s*/is', '', $svg );
+		$svg = preg_replace( '/<!--.*?-->\s*/is', '', $svg );
+		$svg = preg_replace( '/<title>.*?<\/title>\s*/is', '', $svg );
+		$svg = preg_replace( '/\s(width|height)="[^"]*"/i', '', $svg );
+
+		if ( ! preg_match( '/aria-hidden/i', $svg ) ) {
+			$svg = preg_replace( '/<svg/i', '<svg aria-hidden="true"', $svg, 1 );
+		}
+
+		return trim( (string) $svg );
+	}
+
+	/**
 	 * @return array<string, string>
 	 */
 	private static function get_fallback_networks() {
@@ -165,7 +228,6 @@ class Art_Theme_Social_Icons {
 	private static function get_fallback_icons() {
 		return array(
 			'telegram'  => '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.8 4.2 2.7 11.1c-1.2.5-1.2 1.2-.2 1.5l4.9 1.5 1.9 5.8c.2.7.6.9 1.1.9.4 0 .6-.2.9-.7l2.7-2.6 4.8 3.5c.9.5 1.5.2 1.7-1.1L23.5 5.5c.3-1.3-.5-1.9-1.7-1.3Z"/></svg>',
-			'vk'        => '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.785 16.241s.336-.039.508-.233c.158-.172.154-.497.154-.753 0-.41.006-8.335.006-8.335s0-.223.056-.342c.056-.119.158-.204.28-.255.221-.097 1.185-1.097 1.185-1.097s.098-.073.098-.17 0-.119-.098-.17l-1.652-.006s-.374-.006-.547.113c-.113.079-.19.259-.19.259s-.34.904-.792 1.672c-.956 1.583-1.339 1.666-1.495 1.666-.113 0-.224-.079-.224-.602v-3.104c0-.511.015-.813-.224-.98-.171-.117-.491-.154-1.286-.164-.985-.015-1.821.006-2.292.196-.158.068-.28.22-.205.229.092.012.301.056.411.205.143.196.137.638.137.638s.083 2.451-.19 2.754c-.19.226-.563.237-.563.237H5.252s-.855-.012-1.012.393c-.073.196-.056 1.512-.056 1.512h2.667s.399-.006.564.226c.393.533.393 1.581.393 1.581s.025 2.335-.184 2.626c-.178.246-.508.207-.508.207H4.587s-1.215-.037-1.711-1.067L2.59 10.44s-.263-.56.184-.823c.363-.203.854-.135.854-.135l3.014-.019s.22-.037.38.073c.16.111.258.369.258.369s.491 1.243 1.148 2.363c.694 1.161 1.557 2.162 1.557 2.162s.135.111.307.073c.184-.037 0-1.056 0-2.066 0-1.111-.079-1.581-.282-1.8-.215-.233-.614-.307-.614-.307s.491-.037 1.262-.056c.971-.025 1.697.019 2.188.215.331.135.589.429.779.834.196.411.147 1.808.147 1.808s.086 2.521-.196 2.86c-.196.227-.564.171-.564.171h-2.03s-1.826.115-4.083-1.659c-1.48-1.237-3.21-5.041-3.21-5.041s-.301-.632.209-.97c.363-.227 1.619-1.056 1.619-1.056s.122-.073.196-.233c.062-.135.037-.331.037-.331V6.926s-.006-.749.564-.97c.429-.171 1.52-.331 3.345-.429 1.263-.073 2.621-.056 2.621-.056h.627s.467-.031.712.147c.171.135.258.429.258.429s.049 1.243-.098 2.066c-.122.737-.429 1.193-.429 1.193s-.037.171 0 .282c.092.288.429.374.429.374s1.544.515 3.295 2.004c1.006.883 1.773 1.974 1.773 1.974s.129.22.037.442c-.062.147-.282.196-.282.196l-2.056.013z"/></svg>',
 			'youtube'   => '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18 5 12 5 12 5s-6 0-7.8.4a2.5 2.5 0 0 0-1.8 1.8C2 9 2 12 2 12s0 3 .4 4.8a2.5 2.5 0 0 0 1.8 1.8C6 19 12 19 12 19s6 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8c.4-1.8.4-4.8.4-4.8s0-3-.4-4.8ZM10 15.5V8.5l5.5 3.5L10 15.5Z"/></svg>',
 			'instagram' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="12" cy="12" r="3.5"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>',
 			'mail'      => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg>',
@@ -176,6 +238,7 @@ class Art_Theme_Social_Icons {
 			'x'         => '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.3 3h3.2l-7 8.01 8.2 9.99h-6.4l-5.01-6.55-5.73 6.55H1.35l7.48-8.55L1 3h6.57l4.53 5.99L17.3 3zm-1.12 16.2h1.77L7.03 4.74H5.14l11.04 14.46z"/></svg>',
 			'linkedin'  => '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5C4.98 4.88 3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.22 8.25h4.56V23H.22V8.25zM8.09 8.25h4.37v2.01h.06c.61-1.16 2.1-2.38 4.32-2.38 4.62 0 5.47 3.04 5.47 6.99V23h-4.56v-7.1c0-1.69-.03-3.87-2.36-3.87-2.36 0-2.72 1.84-2.72 3.75V23H8.09V8.25z"/></svg>',
 			'ok'        => '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 4.2c2.1 0 3.8 1.7 3.8 3.8S14.1 11.8 12 11.8 8.2 10.1 8.2 8 9.9 4.2 12 4.2zm0 10.3c3.1 0 5.9 1.6 7.5 4.1l-1.7 1.1a8.2 8.2 0 0 0-11.6 0L5.5 18.6c1.6-2.5 4.4-4.1 7.5-4.1zm-4.1 1.9c.8 0 1.4.6 1.4 1.4s-.6 1.4-1.4 1.4-1.4-.6-1.4-1.4.6-1.4 1.4-1.4zm8.2 0c.8 0 1.4.6 1.4 1.4s-.6 1.4-1.4 1.4-1.4-.6-1.4-1.4.6-1.4 1.4-1.4z"/></svg>',
+			'max'       => '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 4h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-5.1l-3.55 3.55a1 1 0 0 1-1.7-.7V16H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm2.2 5.4h1.45l1.55 2.55 1.55-2.55H14v5.2h-1.55v-3.1l-1.7 2.8h-.95l-1.7-2.8v3.1H7.2V9.4zm8.1 0H18v5.2h-1.55V9.4z"/></svg>',
 		);
 	}
 }

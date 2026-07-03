@@ -4,7 +4,7 @@ Tags: one-column, custom-menu, custom-logo, featured-images, translation-ready, 
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.8
+Stable tag: 1.0.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,6 +46,10 @@ No. The theme is intentionally one-column.
 No. The theme works standalone. If ART Starter is active, footer social icons can use the shared icon registry.
 
 == Changelog ==
+
+= 1.0.9 =
+* Исправлена иконка ВКонтакте в подвале: отдельный SVG без рамки приложения.
+* Иконки подвала из темы имеют приоритет над ART Starter; центрирование в круглых кнопках.
 
 = 1.0.8 =
 * Русские подписи для пустого блога и поиска без результатов.
