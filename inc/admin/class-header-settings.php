@@ -66,6 +66,7 @@ class Art_Theme_Header_Settings {
 			'show_tagline'  => true,
 			'show_menu'     => true,
 			'show_button'   => true,
+			'menu_collapse_desktop' => true,
 			'button_label'         => __( 'Личный кабинет', 'art-theme' ),
 			'button_url'           => '#',
 			'button_open_new_tab'  => true,
@@ -112,7 +113,7 @@ class Art_Theme_Header_Settings {
 			$settings['button_label'] = $defaults['button_label'];
 		}
 
-		foreach ( array( 'show_logo', 'show_title', 'show_tagline', 'show_menu', 'show_button', 'button_open_new_tab' ) as $bool_key ) {
+		foreach ( array( 'show_logo', 'show_title', 'show_tagline', 'show_menu', 'show_button', 'button_open_new_tab', 'menu_collapse_desktop' ) as $bool_key ) {
 			if ( ! array_key_exists( $bool_key, $stored ) ) {
 				$settings[ $bool_key ] = $defaults[ $bool_key ];
 			} else {
@@ -704,6 +705,21 @@ class Art_Theme_Header_Settings {
 	}
 
 	/**
+	 * Whether the header menu should collapse into a burger on desktop when it
+	 * no longer fits in a single row.
+	 *
+	 * @param array<string, mixed>|null $settings Optional settings.
+	 * @return bool
+	 */
+	public static function is_menu_collapse_desktop_enabled( $settings = null ) {
+		if ( null === $settings ) {
+			$settings = self::get();
+		}
+
+		return ! empty( $settings['menu_collapse_desktop'] );
+	}
+
+	/**
 	 * Whether a header item is enabled in settings.
 	 *
 	 * @param string               $item     Item slug.
@@ -805,7 +821,7 @@ class Art_Theme_Header_Settings {
 		$existing = wp_parse_args( get_option( self::OPTION_KEY, array() ), $defaults );
 		$merged   = wp_parse_args( $input, $existing );
 
-		$checkboxes = array( 'show_logo', 'show_title', 'show_tagline', 'show_menu', 'show_button', 'button_open_new_tab' );
+		$checkboxes = array( 'show_logo', 'show_title', 'show_tagline', 'show_menu', 'show_button', 'button_open_new_tab', 'menu_collapse_desktop' );
 
 		foreach ( $checkboxes as $key ) {
 			if ( array_key_exists( $key, $input ) ) {
@@ -825,6 +841,7 @@ class Art_Theme_Header_Settings {
 			'show_tagline' => ! empty( $merged['show_tagline'] ),
 			'show_menu'    => ! empty( $merged['show_menu'] ),
 			'show_button'  => ! empty( $merged['show_button'] ),
+			'menu_collapse_desktop' => ! empty( $merged['menu_collapse_desktop'] ),
 			'button_label'        => sanitize_text_field( (string) ( $merged['button_label'] ?? $defaults['button_label'] ) ),
 			'button_url'          => self::sanitize_button_url( $merged['button_url'] ?? $defaults['button_url'] ),
 			'button_open_new_tab' => ! empty( $merged['button_open_new_tab'] ),

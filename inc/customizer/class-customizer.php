@@ -446,6 +446,15 @@ class Art_Theme_Customizer {
 
 		self::add_checkbox_control(
 			$wp_customize,
+			$option_key . '[menu_collapse_desktop]',
+			'art_theme_header_menu_collapse_desktop',
+			'art_theme_header_layout',
+			__( 'Сворачивать меню в бургер на ПК, если не помещается', 'art-theme' ),
+			! empty( $defaults['menu_collapse_desktop'] )
+		);
+
+		self::add_checkbox_control(
+			$wp_customize,
 			$option_key . '[show_button]',
 			'art_theme_header_show_button',
 			'art_theme_header_layout',

@@ -53,11 +53,17 @@ function art_theme_render_site_header() {
 	$panel_id     = 'art-theme-site-header-panel';
 	$needs_panel  = ! empty( $panel_items );
 	$has_button   = Art_Theme_Header_Settings::is_item_enabled( 'button', $settings ) && Art_Theme_Header_Settings::can_render_item( 'button', $settings );
+	$menu_visible = in_array( 'menu', $order, true );
+	$collapsible  = $needs_panel && $menu_visible && Art_Theme_Header_Settings::is_menu_collapse_desktop_enabled( $settings );
 	$header_class = 'art-theme-site-header art-theme-site-header--template-' . $template . ' ' . Art_Theme_Header_Settings::get_width_mode_class( $settings );
 	$header_class .= $has_button ? ' art-theme-site-header--has-button' : ' art-theme-site-header--no-button';
 
 	if ( ! $needs_panel ) {
 		$header_class .= ' art-theme-site-header--no-panel';
+	}
+
+	if ( $collapsible ) {
+		$header_class .= ' art-theme-site-header--menu-collapsible';
 	}
 	?>
 	<header class="<?php echo esc_attr( $header_class ); ?>" data-art-theme-header>

@@ -87,7 +87,7 @@ class Art_Theme_Page_Settings {
 	/**
 	 * Get layout settings for the current singular view (page or CPT using page template).
 	 *
-	 * @param int|null $post_id Optional post ID.
+	 * @param int|WP_Post|null $post_id Optional post ID or object.
 	 * @return array<string, mixed>
 	 */
 	public static function get_for_singular( $post_id = null ) {
@@ -97,6 +97,8 @@ class Art_Theme_Page_Settings {
 			} else {
 				return self::get();
 			}
+		} elseif ( $post_id instanceof WP_Post ) {
+			$post_id = (int) $post_id->ID;
 		}
 
 		$post_id  = (int) $post_id;

@@ -189,6 +189,96 @@
 		} );
 	}
 
+	function initDesktopCollapse( header ) {
+		if ( ! header.classList.contains( 'art-theme-site-header--menu-collapsible' ) ) {
+			return;
+		}
+
+		var inner = header.querySelector( '.art-theme-site-header__desktop .art-theme-site-header__inner' );
+
+		if ( ! inner ) {
+			return;
+		}
+
+		var menu = inner.querySelector( '.art-theme-site-header__menu' );
+		var brand = inner.querySelector( '.art-theme-site-header__brand' );
+		var actions = inner.querySelector( '.art-theme-site-header__actions' );
+
+		// The grid columns use min-width: 0, so an oversized menu overflows its
+		// track (overlapping the brand/button) instead of widening the container.
+		// Measuring the painted geometry detects this regardless of grid sizing.
+		var desktopOverflows = function () {
+			if ( ! menu ) {
+				return false;
+			}
+
+			// Zones widen the grid past its container (button pushed out of view).
+			if ( inner.scrollWidth > inner.clientWidth + 1 ) {
+				return true;
+			}
+
+			// The menu list is clipped by its own box.
+			if ( menu.scrollWidth > menu.clientWidth + 1 ) {
+				return true;
+			}
+
+			var menuRect = menu.getBoundingClientRect();
+
+			if ( actions ) {
+				var actionsRect = actions.getBoundingClientRect();
+
+				if ( menuRect.right > actionsRect.left + 1 && menuRect.left < actionsRect.right ) {
+					return true;
+				}
+			}
+
+			if ( brand ) {
+				var brandRect = brand.getBoundingClientRect();
+
+				if ( menuRect.left < brandRect.right - 1 && menuRect.right > brandRect.left ) {
+					return true;
+				}
+			}
+
+			return false;
+		};
+
+		var evaluate = function () {
+			if ( ! isDesktopNav() ) {
+				header.classList.remove( 'is-desktop-collapsed' );
+
+				return;
+			}
+
+			// Measure in the expanded state; toggling within one frame avoids flicker.
+			header.classList.remove( 'is-desktop-collapsed' );
+
+			if ( desktopOverflows() ) {
+				header.classList.add( 'is-desktop-collapsed' );
+			} else {
+				header.classList.remove( 'is-open' );
+			}
+		};
+
+		evaluate();
+
+		var scheduled = null;
+		var schedule = function () {
+			if ( scheduled ) {
+				window.cancelAnimationFrame( scheduled );
+			}
+
+			scheduled = window.requestAnimationFrame( evaluate );
+		};
+
+		window.addEventListener( 'resize', schedule );
+		window.addEventListener( 'load', evaluate );
+
+		if ( document.fonts && document.fonts.ready && typeof document.fonts.ready.then === 'function' ) {
+			document.fonts.ready.then( evaluate );
+		}
+	}
+
 	function initHeader( header ) {
 		if ( ! header || header.dataset.artThemeHeaderInit ) {
 			return;
@@ -198,6 +288,7 @@
 
 		initDesktopDropdowns( header );
 		initMobilePanel( header );
+		initDesktopCollapse( header );
 	}
 
 	document.querySelectorAll( '[data-art-theme-header]' ).forEach( initHeader );

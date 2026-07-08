@@ -29,7 +29,7 @@ function art_theme_get_editor_content_width_for_post( $post = null ) {
 	}
 
 	if ( 'page' === $post->post_type || art_theme_uses_page_template_layout( $post->post_type ) ) {
-		return (int) Art_Theme_Page_Settings::get_for_singular( $post )['page_width'];
+		return (int) Art_Theme_Page_Settings::get_for_singular( (int) $post->ID )['page_width'];
 	}
 
 	return (int) Art_Theme_Single_Settings::get()['post_width'];
