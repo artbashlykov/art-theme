@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ART_THEME_VERSION', '1.0.11' );
+define( 'ART_THEME_VERSION', '1.0.12' );
 define( 'ART_THEME_SLUG', 'art-theme' );
 define( 'ART_THEME_DIR', get_template_directory() );
 define( 'ART_THEME_URL', get_template_directory_uri() );
@@ -20,6 +20,7 @@ require_once ART_THEME_DIR . '/inc/fonts.php';
 require_once ART_THEME_DIR . '/inc/enqueue.php';
 require_once ART_THEME_DIR . '/inc/class-theme-spacing.php';
 require_once ART_THEME_DIR . '/inc/class-theme-content-template.php';
+require_once ART_THEME_DIR . '/inc/template-tags.php';
 require_once ART_THEME_DIR . '/inc/admin/class-blog-settings.php';
 require_once ART_THEME_DIR . '/inc/admin/class-single-settings.php';
 require_once ART_THEME_DIR . '/inc/admin/class-page-settings.php';
@@ -31,7 +32,6 @@ require_once ART_THEME_DIR . '/inc/site-header.php';
 require_once ART_THEME_DIR . '/inc/site-footer.php';
 require_once ART_THEME_DIR . '/inc/not-found.php';
 require_once ART_THEME_DIR . '/inc/post-performance.php';
-require_once ART_THEME_DIR . '/inc/template-tags.php';
 require_once ART_THEME_DIR . '/inc/class-theme-styles.php';
 require_once ART_THEME_DIR . '/inc/customizer/class-customizer.php';
 require_once ART_THEME_DIR . '/inc/class-updater.php';

@@ -19,8 +19,36 @@ class Art_Theme_Customizer {
 		add_action( 'customize_register', array( __CLASS__, 'register' ) );
 		add_action( 'customize_register', array( __CLASS__, 'reorder_sections' ), 999 );
 		add_action( 'customize_controls_enqueue_scripts', array( __CLASS__, 'enqueue_controls_assets' ) );
+		add_action( 'customize_preview_init', array( __CLASS__, 'enqueue_preview_assets' ) );
 		add_action( 'admin_bar_menu', array( __CLASS__, 'filter_admin_bar_customize_link' ), 100 );
 		add_action( 'admin_menu', array( __CLASS__, 'filter_appearance_customize_submenu' ), 999 );
+	}
+
+	/**
+	 * Enqueue Customizer preview assets.
+	 */
+	public static function enqueue_preview_assets() {
+		$script_path = ART_THEME_DIR . '/assets/js/customize-preview.js';
+
+		wp_enqueue_script(
+			'art-theme-customize-preview',
+			ART_THEME_URL . '/assets/js/customize-preview.js',
+			array( 'customize-preview' ),
+			file_exists( $script_path ) ? (string) filemtime( $script_path ) : ART_THEME_VERSION,
+			true
+		);
+
+		wp_localize_script(
+			'art-theme-customize-preview',
+			'artThemeCustomizePreview',
+			array(
+				'copyrightTextSettingId' => Art_Theme_Footer_Settings::OPTION_KEY . '[copyright_text]',
+				'showCopyrightSettingId' => Art_Theme_Footer_Settings::OPTION_KEY . '[show_copyright]',
+				'yearShortcode'          => Art_Theme_Footer_Settings::COPYRIGHT_YEAR_SHORTCODE,
+				'currentYear'            => (string) date_i18n( 'Y' ),
+				'siteName'               => (string) get_bloginfo( 'name', 'display' ),
+			)
+		);
 	}
 
 	/**
@@ -784,7 +812,8 @@ class Art_Theme_Customizer {
 			'art_theme_footer_show_copyright',
 			'art_theme_footer_content',
 			__( 'Показывать копирайт', 'art-theme' ),
-			1
+			1,
+			'postMessage'
 		);
 
 		$wp_customize->add_setting(
@@ -840,7 +869,7 @@ class Art_Theme_Customizer {
 			array(
 				'type'              => 'option',
 				'default'           => $defaults['copyright_text'],
-				'transport'         => 'refresh',
+				'transport'         => 'postMessage',
 				'sanitize_callback' => 'sanitize_text_field',
 			)
 		);
@@ -1535,14 +1564,15 @@ class Art_Theme_Customizer {
 	 * @param string               $section       Section ID.
 	 * @param string               $label         Control label.
 	 * @param bool                 $default       Default value.
+	 * @param string               $transport     Optional transport. Default refresh.
 	 */
-	private static function add_checkbox_control( $wp_customize, $setting_id, $control_id, $section, $label, $default ) {
+	private static function add_checkbox_control( $wp_customize, $setting_id, $control_id, $section, $label, $default, $transport = 'refresh' ) {
 		$wp_customize->add_setting(
 			$setting_id,
 			array(
 				'type'              => 'option',
 				'default'           => $default,
-				'transport'         => 'refresh',
+				'transport'         => $transport,
 				'sanitize_callback' => 'wp_validate_boolean',
 			)
 		);

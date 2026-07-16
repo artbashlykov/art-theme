@@ -63,24 +63,27 @@ class Art_Theme_Blog_Settings {
 	public static function get() {
 		static $cached = null;
 
-		if ( null !== $cached ) {
+		if ( null !== $cached && ! is_customize_preview() ) {
 			return $cached;
 		}
 
-		$stored = get_option( self::OPTION_KEY, array() );
+		$stored   = get_option( self::OPTION_KEY, array() );
+		$defaults = self::get_defaults();
 
 		if ( ! is_array( $stored ) ) {
 			$stored = array();
 		}
 
-		$settings = wp_parse_args( $stored, self::get_defaults() );
+		$stored = art_theme_overlay_customizer_option_values( self::OPTION_KEY, $stored, array_keys( $defaults ) );
+
+		$settings = wp_parse_args( $stored, $defaults );
 
 		if ( '' === $settings['blog_title'] && ! empty( $stored['archive_title'] ) ) {
 			$settings['blog_title'] = (string) $stored['archive_title'];
 		}
 
 		if ( '' === trim( (string) $settings['blog_title'] ) ) {
-			$settings['blog_title'] = self::get_defaults()['blog_title'];
+			$settings['blog_title'] = $defaults['blog_title'];
 		}
 
 		if ( '' === $settings['blog_description'] && ! empty( $stored['archive_description'] ) ) {
@@ -110,25 +113,27 @@ class Art_Theme_Blog_Settings {
 
 		foreach ( $checkboxes as $bool_key ) {
 			if ( ! array_key_exists( $bool_key, $stored ) ) {
-				$settings[ $bool_key ] = self::get_defaults()[ $bool_key ];
+				$settings[ $bool_key ] = $defaults[ $bool_key ];
 			} else {
 				$settings[ $bool_key ] = wp_validate_boolean( $stored[ $bool_key ] );
 			}
 		}
 
 		if ( '' === trim( (string) $settings['all_categories_label'] ) ) {
-			$settings['all_categories_label'] = self::get_defaults()['all_categories_label'];
+			$settings['all_categories_label'] = $defaults['all_categories_label'];
 		}
 
 		if ( '' === trim( (string) $settings['read_button_text'] ) ) {
-			$settings['read_button_text'] = self::get_defaults()['read_button_text'];
+			$settings['read_button_text'] = $defaults['read_button_text'];
 		}
 
 		$settings['cover_aspect_ratio'] = self::sanitize_cover_aspect_ratio( $settings['cover_aspect_ratio'] ?? '2-1' );
 
-		$cached = $settings;
+		if ( ! is_customize_preview() ) {
+			$cached = $settings;
+		}
 
-		return $cached;
+		return $settings;
 	}
 
 	/**

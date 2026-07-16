@@ -8,6 +8,42 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
+ * Merge live Customizer preview values into a stored option array.
+ *
+ * Nested option settings can keep a stale aggregated root_value; reading
+ * WP_Customize_Setting::value() applies the post value reliably.
+ *
+ * @param string               $option_key Option name (e.g. art_theme_footer_settings).
+ * @param array<string, mixed> $stored     Values from get_option().
+ * @param array<int, string>   $keys       Subkeys registered as Customizer settings.
+ * @return array<string, mixed>
+ */
+function art_theme_overlay_customizer_option_values( $option_key, $stored, $keys ) {
+	if ( ! is_customize_preview() || ! is_array( $stored ) ) {
+		return is_array( $stored ) ? $stored : array();
+	}
+
+	global $wp_customize;
+
+	if ( ! $wp_customize instanceof WP_Customize_Manager ) {
+		return $stored;
+	}
+
+	foreach ( $keys as $key ) {
+		$setting_id = $option_key . '[' . $key . ']';
+		$setting    = $wp_customize->get_setting( $setting_id );
+
+		if ( ! $setting instanceof WP_Customize_Setting ) {
+			continue;
+		}
+
+		$stored[ $key ] = $setting->value();
+	}
+
+	return $stored;
+}
+
+/**
  * Whether the current view is a posts archive listing.
  *
  * @return bool

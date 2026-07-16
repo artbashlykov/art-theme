@@ -59,7 +59,7 @@ class Art_Theme_Page_Settings {
 	public static function get() {
 		static $cached = null;
 
-		if ( null !== $cached ) {
+		if ( null !== $cached && ! is_customize_preview() ) {
 			return $cached;
 		}
 
@@ -70,6 +70,8 @@ class Art_Theme_Page_Settings {
 			$stored = array();
 		}
 
+		$stored = art_theme_overlay_customizer_option_values( self::OPTION_KEY, $stored, array_keys( $defaults ) );
+
 		$settings = wp_parse_args( $stored, $defaults );
 
 		$settings['page_width']           = max( 600, min( 1400, (int) $settings['page_width'] ) );
@@ -79,9 +81,11 @@ class Art_Theme_Page_Settings {
 		$settings['boxed_padding_block']  = self::sanitize_boxed_padding_block( $settings['boxed_padding_block'] ?? 32 );
 		$settings['boxed_padding_inline'] = self::sanitize_boxed_padding_inline( $settings['boxed_padding_inline'] ?? 24 );
 
-		$cached = $settings;
+		if ( ! is_customize_preview() ) {
+			$cached = $settings;
+		}
 
-		return $cached;
+		return $settings;
 	}
 
 	/**

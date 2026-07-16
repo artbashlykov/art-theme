@@ -76,7 +76,7 @@ class Art_Theme_Footer_Settings {
 	public static function get() {
 		static $cached = null;
 
-		if ( null !== $cached ) {
+		if ( null !== $cached && ! is_customize_preview() ) {
 			return $cached;
 		}
 
@@ -86,6 +86,8 @@ class Art_Theme_Footer_Settings {
 		if ( ! is_array( $stored ) ) {
 			$stored = array();
 		}
+
+		$stored = art_theme_overlay_customizer_option_values( self::OPTION_KEY, $stored, array_keys( $defaults ) );
 
 		$settings = wp_parse_args( $stored, $defaults );
 
@@ -108,9 +110,11 @@ class Art_Theme_Footer_Settings {
 			}
 		}
 
-		$cached = $settings;
+		if ( ! is_customize_preview() ) {
+			$cached = $settings;
+		}
 
-		return $cached;
+		return $settings;
 	}
 
 	/**
