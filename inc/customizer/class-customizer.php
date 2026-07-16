@@ -736,7 +736,7 @@ class Art_Theme_Customizer {
 			'art_theme_footer_content',
 			array(
 				'title'       => __( 'Содержимое подвала', 'art-theme' ),
-				'description' => __( 'Название и описание сайта берутся из раздела «Идентичность сайта». Копирайт выводится как «© год текст»; если поле пустое — подставляется название сайта.', 'art-theme' ),
+				'description' => __( 'Название и описание сайта берутся из раздела «Идентичность сайта». Копирайт выводится как «© год текст»; если поле пустое — подставляется название сайта. В тексте копирайта можно использовать шорткод [current_year] — тогда строка выводится как есть, например: (c) 2018-[current_year].', 'art-theme' ),
 				'panel'       => 'art_theme_footer',
 				'priority'    => 20,
 			)
@@ -835,14 +835,25 @@ class Art_Theme_Customizer {
 			)
 		);
 
-		self::add_text_control(
-			$wp_customize,
+		$wp_customize->add_setting(
 			$option_key . '[copyright_text]',
+			array(
+				'type'              => 'option',
+				'default'           => $defaults['copyright_text'],
+				'transport'         => 'refresh',
+				'sanitize_callback' => 'sanitize_text_field',
+			)
+		);
+
+		$wp_customize->add_control(
 			'art_theme_footer_copyright_text',
-			'art_theme_footer_content',
-			__( 'Текст копирайта', 'art-theme' ),
-			$defaults['copyright_text'],
-			'sanitize_text_field'
+			array(
+				'label'       => __( 'Текст копирайта', 'art-theme' ),
+				'description' => __( 'Шорткод [current_year] подставляет текущий год. Пример: (c) 2018-[current_year]. Если шорткод указан, строка выводится целиком без автопрефикса «© год».', 'art-theme' ),
+				'section'     => 'art_theme_footer_content',
+				'settings'    => $option_key . '[copyright_text]',
+				'type'        => 'text',
+			)
 		);
 	}
 

@@ -32,6 +32,11 @@ class Art_Theme_Footer_Settings {
 	const MAX_LINK_ITEMS   = 10;
 
 	/**
+	 * Placeholder shortcode for the current year in copyright text.
+	 */
+	const COPYRIGHT_YEAR_SHORTCODE = '[current_year]';
+
+	/**
 	 * Register hooks.
 	 */
 	public static function init() {
@@ -129,16 +134,50 @@ class Art_Theme_Footer_Settings {
 	}
 
 	/**
+	 * Replace copyright placeholders (e.g. [current_year]).
+	 *
+	 * @param string $text Raw copyright text.
+	 * @return string
+	 */
+	public static function expand_copyright_placeholders( $text ) {
+		return str_replace(
+			self::COPYRIGHT_YEAR_SHORTCODE,
+			(string) date_i18n( 'Y' ),
+			(string) $text
+		);
+	}
+
+	/**
+	 * Whether copyright text uses the current-year shortcode.
+	 *
+	 * @param string $text Copyright text.
+	 * @return bool
+	 */
+	public static function copyright_has_year_shortcode( $text ) {
+		return false !== strpos( (string) $text, self::COPYRIGHT_YEAR_SHORTCODE );
+	}
+
+	/**
 	 * Full copyright line with symbol and year.
+	 *
+	 * When the copyright field contains [current_year], the field is used as the
+	 * full line (after placeholder expansion), e.g. "(c) 2018-[current_year]".
+	 * Otherwise the classic format "© YEAR text" is kept.
 	 *
 	 * @param array<string, mixed>|null $settings Optional settings.
 	 * @return string
 	 */
 	public static function get_copyright_line( $settings = null ) {
+		$text = self::get_copyright_text( $settings );
+
+		if ( self::copyright_has_year_shortcode( $text ) ) {
+			return self::expand_copyright_placeholders( $text );
+		}
+
 		return sprintf(
 			'© %1$s %2$s',
-			gmdate( 'Y' ),
-			self::get_copyright_text( $settings )
+			date_i18n( 'Y' ),
+			$text
 		);
 	}
 
