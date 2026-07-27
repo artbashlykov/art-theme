@@ -131,13 +131,34 @@
 
 .art-theme-footer-repeater__item {
 	display: grid;
-	grid-template-columns: minmax(0, 1fr) auto;
+	grid-template-columns: auto minmax(0, 1fr) auto;
 	gap: 8px;
 	align-items: start;
 	padding: 10px 12px;
 	border: 1px solid #dcdcde;
 	border-radius: 6px;
 	background: #fff;
+}
+
+.art-theme-footer-repeater__item--social {
+	grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.art-theme-footer-repeater__handle {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	margin-top: 6px;
+	color: #787c82;
+	cursor: grab;
+}
+
+.art-theme-footer-repeater__handle:active {
+	cursor: grabbing;
+}
+
+.art-theme-footer-repeater__item.ui-sortable-helper {
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
 .art-theme-footer-repeater__fields {

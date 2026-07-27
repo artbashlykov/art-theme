@@ -59,6 +59,9 @@
 
 		return (
 			'<div class="art-theme-footer-repeater__item art-theme-footer-repeater__item--link">' +
+				'<span class="art-theme-footer-repeater__handle dashicons dashicons-menu" aria-hidden="true" title="' +
+					( config.reorderLabel || 'Перетащить' ) +
+				'"></span>' +
 				'<div class="art-theme-footer-repeater__fields">' +
 					'<input type="text" class="art-theme-footer-repeater__label" value="' + ( item.label || '' ).replace( /"/g, '&quot;' ) + '" placeholder="' + ( config.linkLabelPlaceholder || 'Текст ссылки' ) + '" />' +
 					'<input type="url" class="art-theme-footer-repeater__url" value="' + ( item.url || '' ).replace( /"/g, '&quot;' ) + '" placeholder="https://..." />' +
@@ -182,6 +185,17 @@
 			var items = parseValue( control.setting.get() );
 
 			renderRows( $field, items, type );
+
+			if ( 'links' === type && $.fn.sortable ) {
+				$field.find( '.art-theme-footer-repeater__list' ).sortable( {
+					handle: '.art-theme-footer-repeater__handle',
+					axis: 'y',
+					tolerance: 'pointer',
+					update: function () {
+						syncField( $field, control.setting, true );
+					},
+				} );
+			}
 
 			$field.on( 'click', '.art-theme-footer-repeater__add', function ( event ) {
 				event.preventDefault();

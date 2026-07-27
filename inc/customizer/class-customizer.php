@@ -139,7 +139,7 @@ class Art_Theme_Customizer {
 		wp_enqueue_script(
 			'art-theme-footer-customize',
 			ART_THEME_URL . '/assets/js/footer-customize.js',
-			array( 'jquery', 'customize-controls' ),
+			array( 'jquery', 'jquery-ui-sortable', 'customize-controls' ),
 			file_exists( $footer_path ) ? (string) filemtime( $footer_path ) : ART_THEME_VERSION,
 			true
 		);
@@ -150,6 +150,7 @@ class Art_Theme_Customizer {
 			array(
 				'socialNetworks'       => Art_Theme_Social_Icons::get_networks(),
 				'removeLabel'          => __( 'Удалить', 'art-theme' ),
+				'reorderLabel'         => __( 'Перетащить', 'art-theme' ),
 				'linkLabelPlaceholder' => __( 'Текст ссылки', 'art-theme' ),
 				'openNewTabLabel'      => __( 'Открывать в новой вкладке', 'art-theme' ),
 			)
@@ -856,7 +857,7 @@ class Art_Theme_Customizer {
 				'art_theme_footer_custom_links',
 				array(
 					'label'         => __( 'Произвольные ссылки', 'art-theme' ),
-					'description'   => __( 'Добавьте политику, оферту и другие ссылки. До 10 элементов.', 'art-theme' ),
+					'description'   => __( 'Добавьте политику, оферту и другие ссылки. До 10 элементов. Порядок меняется перетаскиванием.', 'art-theme' ),
 					'section'       => 'art_theme_footer_content',
 					'settings'      => $option_key . '[custom_links]',
 					'repeater_type' => 'links',
