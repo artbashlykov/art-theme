@@ -140,10 +140,6 @@
 	background: #fff;
 }
 
-.art-theme-footer-repeater__item--social {
-	grid-template-columns: minmax(0, 1fr) auto;
-}
-
 .art-theme-footer-repeater__handle {
 	display: inline-flex;
 	align-items: center;

@@ -44,6 +44,9 @@
 
 		return (
 			'<div class="art-theme-footer-repeater__item art-theme-footer-repeater__item--social">' +
+				'<span class="art-theme-footer-repeater__handle dashicons dashicons-menu" aria-hidden="true" title="' +
+					( config.reorderLabel || 'Перетащить' ) +
+				'"></span>' +
 				'<div class="art-theme-footer-repeater__fields">' +
 					'<select class="art-theme-footer-repeater__network">' + getNetworksOptions( item.network || '' ) + '</select>' +
 					'<input type="url" class="art-theme-footer-repeater__url" value="' + ( item.url || '' ).replace( /"/g, '&quot;' ) + '" placeholder="https://..." />' +
@@ -186,7 +189,7 @@
 
 			renderRows( $field, items, type );
 
-			if ( 'links' === type && $.fn.sortable ) {
+			if ( $.fn.sortable ) {
 				$field.find( '.art-theme-footer-repeater__list' ).sortable( {
 					handle: '.art-theme-footer-repeater__handle',
 					axis: 'y',

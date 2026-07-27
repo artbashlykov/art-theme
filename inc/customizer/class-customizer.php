@@ -833,7 +833,7 @@ class Art_Theme_Customizer {
 				'art_theme_footer_socials',
 				array(
 					'label'         => __( 'Соцсети', 'art-theme' ),
-					'description'   => __( 'Выберите сеть и укажите ссылку. До 10 элементов.', 'art-theme' ),
+					'description'   => __( 'Выберите сеть и укажите ссылку. До 10 элементов. Порядок меняется перетаскиванием.', 'art-theme' ),
 					'section'       => 'art_theme_footer_content',
 					'settings'      => $option_key . '[socials]',
 					'repeater_type' => 'socials',
