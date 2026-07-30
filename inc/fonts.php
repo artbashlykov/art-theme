@@ -46,9 +46,15 @@ function art_theme_get_fonts_stylesheet_version() {
 }
 
 /**
- * Register front-end font stylesheet.
+ * Register front-end font stylesheet (skipped for system font pack).
  */
 function art_theme_register_fonts() {
+	if ( ! Art_Theme_Appearance_Settings::should_load_local_fonts() ) {
+		wp_register_style( 'art-theme-fonts', false, array(), ART_THEME_VERSION );
+
+		return;
+	}
+
 	wp_register_style(
 		'art-theme-fonts',
 		art_theme_get_fonts_stylesheet_uri(),
@@ -62,11 +68,18 @@ add_action( 'wp_enqueue_scripts', 'art_theme_register_fonts', 5 );
  * Enqueue fonts in block editor preview.
  */
 function art_theme_enqueue_editor_fonts() {
-	wp_enqueue_style(
-		'art-theme-fonts',
-		art_theme_get_fonts_stylesheet_uri(),
-		array(),
-		art_theme_get_fonts_stylesheet_version()
-	);
+	if ( Art_Theme_Appearance_Settings::should_load_local_fonts() ) {
+		wp_enqueue_style(
+			'art-theme-fonts',
+			art_theme_get_fonts_stylesheet_uri(),
+			array(),
+			art_theme_get_fonts_stylesheet_version()
+		);
+	} else {
+		wp_register_style( 'art-theme-fonts', false, array(), ART_THEME_VERSION );
+		wp_enqueue_style( 'art-theme-fonts' );
+	}
+
+	wp_add_inline_style( 'art-theme-fonts', Art_Theme_Appearance_Settings::get_inline_css() );
 }
 add_action( 'enqueue_block_editor_assets', 'art_theme_enqueue_editor_fonts' );

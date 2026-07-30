@@ -25,6 +25,8 @@ function art_theme_enqueue_assets() {
 
 	$style_handle = Art_Theme_Styles::get_primary_handle();
 
+	wp_add_inline_style( $style_handle, Art_Theme_Appearance_Settings::get_inline_css() );
+
 	if ( ! empty( Art_Theme_Header_Settings::get_visible_order() ) ) {
 		$header_settings = Art_Theme_Header_Settings::get();
 		$header_css_vars = array(

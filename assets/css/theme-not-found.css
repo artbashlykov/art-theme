@@ -68,8 +68,8 @@
 	min-height: 40px;
 	padding: 0 18px;
 	border-radius: 8px;
-	border: 1px solid var(--art-theme-fg);
-	background: var(--art-theme-fg);
+	border: 1px solid var(--art-theme-accent);
+	background: var(--art-theme-accent);
 	color: var(--art-theme-surface);
 	font-size: 0.875rem;
 	font-weight: 600;

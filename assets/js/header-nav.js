@@ -204,12 +204,63 @@
 		var brand = inner.querySelector( '.art-theme-site-header__brand' );
 		var actions = inner.querySelector( '.art-theme-site-header__actions' );
 
-		// The grid columns use min-width: 0, so an oversized menu overflows its
-		// track (overlapping the brand/button) instead of widening the container.
-		// Measuring the painted geometry detects this regardless of grid sizing.
+		// Brand/actions keep intrinsic width; nav gets the leftover track.
+		// Compare the menu's natural width to that leftover (plus geometric fallbacks).
+		var getContentBoxWidth = function () {
+			var computed = window.getComputedStyle( inner );
+			var padL = parseFloat( computed.paddingLeft ) || 0;
+			var padR = parseFloat( computed.paddingRight ) || 0;
+
+			return inner.clientWidth - padL - padR;
+		};
+
+		var getColumnGap = function () {
+			var computed = window.getComputedStyle( inner );
+			var columnGap = computed.columnGap;
+
+			if ( columnGap && 'normal' !== columnGap ) {
+				return parseFloat( columnGap ) || 0;
+			}
+
+			var gap = computed.gap;
+
+			if ( ! gap || 'normal' === gap ) {
+				return 0;
+			}
+
+			var parts = gap.split( /\s+/ );
+
+			return parseFloat( parts.length > 1 ? parts[ 1 ] : parts[ 0 ] ) || 0;
+		};
+
+		var getMenuNaturalWidth = function () {
+			var total = 0;
+			var children = menu.children;
+			var i;
+
+			for ( i = 0; i < children.length; i++ ) {
+				if ( 1 === children[ i ].nodeType ) {
+					total += children[ i ].getBoundingClientRect().width;
+				}
+			}
+
+			return Math.max( Math.ceil( total ), menu.scrollWidth );
+		};
+
 		var desktopOverflows = function () {
 			if ( ! menu ) {
 				return false;
+			}
+
+			var brandWidth = brand ? Math.ceil( brand.getBoundingClientRect().width ) : 0;
+			var actionsWidth = actions ? Math.ceil( actions.getBoundingClientRect().width ) : 0;
+			var gap = getColumnGap();
+			var gapCount = ( brand ? 1 : 0 ) + ( actions ? 1 : 0 );
+			var available = getContentBoxWidth() - brandWidth - actionsWidth - ( gap * gapCount );
+			var menuNatural = getMenuNaturalWidth();
+
+			if ( menuNatural > available + 1 ) {
+				return true;
 			}
 
 			// Zones widen the grid past its container (button pushed out of view).
@@ -223,6 +274,11 @@
 			}
 
 			var menuRect = menu.getBoundingClientRect();
+			var nav = menu.closest( '.art-theme-site-header__nav' );
+
+			if ( nav && menu.scrollWidth > nav.clientWidth + 1 ) {
+				return true;
+			}
 
 			if ( actions ) {
 				var actionsRect = actions.getBoundingClientRect();
@@ -268,14 +324,21 @@
 				window.cancelAnimationFrame( scheduled );
 			}
 
-			scheduled = window.requestAnimationFrame( evaluate );
+			scheduled = window.requestAnimationFrame( function () {
+				scheduled = window.requestAnimationFrame( evaluate );
+			} );
 		};
 
 		window.addEventListener( 'resize', schedule );
 		window.addEventListener( 'load', evaluate );
 
+		if ( typeof ResizeObserver === 'function' ) {
+			var resizeObserver = new ResizeObserver( schedule );
+			resizeObserver.observe( header );
+		}
+
 		if ( document.fonts && document.fonts.ready && typeof document.fonts.ready.then === 'function' ) {
-			document.fonts.ready.then( evaluate );
+			document.fonts.ready.then( schedule );
 		}
 	}
 

@@ -47,6 +47,26 @@ class Art_Theme_Customizer {
 				'yearShortcode'          => Art_Theme_Footer_Settings::COPYRIGHT_YEAR_SHORTCODE,
 				'currentYear'            => (string) date_i18n( 'Y' ),
 				'siteName'               => (string) get_bloginfo( 'name', 'display' ),
+				'appearance'             => array(
+					'colors' => array(
+						array(
+							'id'  => Art_Theme_Appearance_Settings::OPTION_KEY . '[color_canvas]',
+							'var' => '--art-theme-canvas',
+						),
+						array(
+							'id'  => Art_Theme_Appearance_Settings::OPTION_KEY . '[color_surface]',
+							'var' => '--art-theme-surface',
+						),
+						array(
+							'id'  => Art_Theme_Appearance_Settings::OPTION_KEY . '[color_text]',
+							'var' => '--art-theme-fg',
+						),
+						array(
+							'id'  => Art_Theme_Appearance_Settings::OPTION_KEY . '[color_accent]',
+							'var' => '--art-theme-accent',
+						),
+					),
+				),
 			)
 		);
 	}
@@ -173,6 +193,16 @@ class Art_Theme_Customizer {
 				'previewUrl' => Art_Theme_Not_Found_Settings::get_preview_url(),
 			)
 		);
+
+		$groups_path = ART_THEME_DIR . '/assets/js/customize-groups.js';
+
+		wp_enqueue_script(
+			'art-theme-customize-groups',
+			ART_THEME_URL . '/assets/js/customize-groups.js',
+			array( 'jquery', 'customize-controls' ),
+			file_exists( $groups_path ) ? (string) filemtime( $groups_path ) : ART_THEME_VERSION,
+			true
+		);
 	}
 
 	/**
@@ -204,6 +234,10 @@ class Art_Theme_Customizer {
 		}
 
 		foreach ( self::build_defaults_map_for_option( Art_Theme_Not_Found_Settings::OPTION_KEY, Art_Theme_Not_Found_Settings::get_defaults() ) as $setting_id => $value ) {
+			$map[ $setting_id ] = $value;
+		}
+
+		foreach ( self::build_defaults_map_for_option( Art_Theme_Appearance_Settings::OPTION_KEY, Art_Theme_Appearance_Settings::get_defaults() ) as $setting_id => $value ) {
 			$map[ $setting_id ] = $value;
 		}
 
@@ -252,24 +286,42 @@ class Art_Theme_Customizer {
 	 */
 	public static function register( $wp_customize ) {
 		require_once ART_THEME_DIR . '/inc/customizer/class-layout-order-control.php';
+		require_once ART_THEME_DIR . '/inc/customizer/class-customize-group-section.php';
+
+		$wp_customize->register_section_type( 'Art_Theme_Customize_Group_Section' );
+
+		self::register_root_groups( $wp_customize );
+
+		self::register_appearance( $wp_customize );
 
 		$wp_customize->add_panel(
 			'art_theme_header',
 			array(
-				'title'       => __( 'Шапка сайта', 'art-theme' ),
+				'title'       => __( 'Настройки шапки', 'art-theme' ),
 				'description' => __( 'Элементы шапки и их видимость.', 'art-theme' ),
-				'priority'    => 199,
+				'priority'    => 100,
 			)
 		);
 
 		self::register_site_header( $wp_customize );
 
 		$wp_customize->add_panel(
+			'art_theme_footer',
+			array(
+				'title'       => __( 'Настройки подвала', 'art-theme' ),
+				'description' => __( 'Структура, оформление и содержимое подвала.', 'art-theme' ),
+				'priority'    => 105,
+			)
+		);
+
+		self::register_site_footer( $wp_customize );
+
+		$wp_customize->add_panel(
 			'art_theme_page',
 			array(
 				'title'       => __( 'Настройка страницы', 'art-theme' ),
 				'description' => __( 'Шаблон статических страниц и произвольных типов записей с макетом страницы: вариант оформления, ширина и внутренние отступы.', 'art-theme' ),
-				'priority'    => 200,
+				'priority'    => 115,
 			)
 		);
 
@@ -280,7 +332,7 @@ class Art_Theme_Customizer {
 			array(
 				'title'       => __( 'Настройка блога', 'art-theme' ),
 				'description' => __( 'Шаблон страницы блога, шапка и карточки записей.', 'art-theme' ),
-				'priority'    => 201,
+				'priority'    => 120,
 			)
 		);
 
@@ -293,7 +345,7 @@ class Art_Theme_Customizer {
 			array(
 				'title'       => __( 'Настройка записи', 'art-theme' ),
 				'description' => __( 'Шаблон одиночной записи и элементы мета-блока.', 'art-theme' ),
-				'priority'    => 202,
+				'priority'    => 130,
 			)
 		);
 
@@ -301,17 +353,69 @@ class Art_Theme_Customizer {
 		self::register_single_meta( $wp_customize );
 
 		self::register_not_found_page( $wp_customize );
+	}
 
-		$wp_customize->add_panel(
-			'art_theme_footer',
+	/**
+	 * Colors and fonts.
+	 *
+	 * @param WP_Customize_Manager $wp_customize Customizer instance.
+	 */
+	private static function register_appearance( $wp_customize ) {
+		$option_key = Art_Theme_Appearance_Settings::OPTION_KEY;
+		$defaults   = Art_Theme_Appearance_Settings::get_defaults();
+
+		$wp_customize->add_section(
+			'art_theme_appearance',
 			array(
-				'title'       => __( 'Подвал сайта', 'art-theme' ),
-				'description' => __( 'Структура, оформление и содержимое подвала.', 'art-theme' ),
-				'priority'    => 204,
+				'title'       => __( 'Цвета и шрифты', 'art-theme' ),
+				'description' => __( 'Эти настройки задают общий вид сайта. Шапка, подвал и шаблоны страниц настраиваются в разделах ниже.', 'art-theme' ),
+				'priority'    => 45,
 			)
 		);
 
-		self::register_site_footer( $wp_customize );
+		$colors = array(
+			'color_canvas'  => __( 'Фон страницы', 'art-theme' ),
+			'color_surface' => __( 'Фон контента', 'art-theme' ),
+			'color_text'    => __( 'Текст', 'art-theme' ),
+			'color_accent'  => __( 'Акцент', 'art-theme' ),
+		);
+
+		foreach ( $colors as $key => $label ) {
+			$setting_id = $option_key . '[' . $key . ']';
+
+			$wp_customize->add_setting(
+				$setting_id,
+				array(
+					'type'              => 'option',
+					'default'           => $defaults[ $key ],
+					'transport'         => 'postMessage',
+					'sanitize_callback' => array( 'Art_Theme_Appearance_Settings', 'sanitize_color' ),
+				)
+			);
+
+			$wp_customize->add_control(
+				new WP_Customize_Color_Control(
+					$wp_customize,
+					'art_theme_appearance_' . $key,
+					array(
+						'label'    => $label,
+						'section'  => 'art_theme_appearance',
+						'settings' => $setting_id,
+					)
+				)
+			);
+		}
+
+		self::add_select_control(
+			$wp_customize,
+			$option_key . '[font_pack]',
+			'art_theme_appearance_font_pack',
+			'art_theme_appearance',
+			__( 'Набор шрифтов', 'art-theme' ),
+			$defaults['font_pack'],
+			Art_Theme_Appearance_Settings::get_font_pack_choices(),
+			array( 'Art_Theme_Appearance_Settings', 'sanitize_font_pack' )
+		);
 	}
 
 	/**
@@ -446,6 +550,12 @@ class Art_Theme_Customizer {
 			! empty( $defaults['show_logo'] )
 		);
 
+		$logo_control = $wp_customize->get_control( 'art_theme_header_show_logo' );
+
+		if ( $logo_control ) {
+			$logo_control->description = __( 'Сам файл логотипа загружается в разделе «Идентичность сайта».', 'art-theme' );
+		}
+
 		self::add_checkbox_control(
 			$wp_customize,
 			$option_key . '[show_title]',
@@ -533,21 +643,140 @@ class Art_Theme_Customizer {
 	}
 
 	/**
-	 * Keep theme sections above Additional CSS in the Customizer menu.
+	 * Root group headings between core and theme Customizer items.
+	 *
+	 * @param WP_Customize_Manager $wp_customize Customizer instance.
+	 */
+	private static function register_root_groups( $wp_customize ) {
+		$wp_customize->add_section(
+			new Art_Theme_Customize_Group_Section(
+				$wp_customize,
+				'art_theme_group_general',
+				array(
+					'title'          => __( 'Общие настройки', 'art-theme' ),
+					'priority'       => 35,
+					'divider_before' => false,
+				)
+			)
+		);
+
+		$wp_customize->add_section(
+			new Art_Theme_Customize_Group_Section(
+				$wp_customize,
+				'art_theme_group_chrome',
+				array(
+					'title'          => __( 'Шапка и подвал сайта', 'art-theme' ),
+					'priority'       => 95,
+					'divider_before' => false,
+				)
+			)
+		);
+
+		$wp_customize->add_section(
+			new Art_Theme_Customize_Group_Section(
+				$wp_customize,
+				'art_theme_group_parts',
+				array(
+					'title'          => __( 'Внешний вид страниц', 'art-theme' ),
+					'priority'       => 110,
+					'divider_before' => false,
+				)
+			)
+		);
+
+		$wp_customize->add_section(
+			new Art_Theme_Customize_Group_Section(
+				$wp_customize,
+				'art_theme_group_other',
+				array(
+					'title'          => __( 'Прочие настройки', 'art-theme' ),
+					'priority'       => 195,
+					'divider_before' => false,
+				)
+			)
+		);
+	}
+
+	/**
+	 * Group and reorder root Customizer panels/sections.
+	 *
+	 * Group headings are real sections with priorities (see register_root_groups).
 	 *
 	 * @param WP_Customize_Manager $wp_customize Customizer instance.
 	 */
 	public static function reorder_sections( $wp_customize ) {
-		$menu_order = array(
-			'art_theme_header'    => 199,
-			'art_theme_page'      => 200,
-			'art_theme_blog'      => 201,
-			'art_theme_single'    => 202,
-			'art_theme_not_found' => 203,
-			'art_theme_footer'    => 204,
+		// Общие настройки.
+		$general_group = $wp_customize->get_section( 'art_theme_group_general' );
+
+		if ( $general_group instanceof WP_Customize_Section ) {
+			$general_group->priority = 35;
+		}
+
+		$title_tagline = $wp_customize->get_section( 'title_tagline' );
+
+		if ( $title_tagline instanceof WP_Customize_Section ) {
+			$title_tagline->title    = __( 'Свойства сайта', 'art-theme' );
+			$title_tagline->priority = 40;
+		}
+
+		$appearance = $wp_customize->get_section( 'art_theme_appearance' );
+
+		if ( $appearance instanceof WP_Customize_Section ) {
+			$appearance->priority = 45;
+		}
+
+		$static_front_page = $wp_customize->get_section( 'static_front_page' );
+
+		if ( $static_front_page instanceof WP_Customize_Section ) {
+			$static_front_page->title    = __( 'Настройка главной', 'art-theme' );
+			$static_front_page->priority = 50;
+		}
+
+		$nav_menus = $wp_customize->get_panel( 'nav_menus' );
+
+		if ( $nav_menus instanceof WP_Customize_Panel ) {
+			$nav_menus->title    = __( 'Меню', 'art-theme' );
+			$nav_menus->priority = 60;
+		}
+
+		self::configure_site_icon_control( $wp_customize );
+
+		// Шапка и подвал сайта.
+		$chrome_group = $wp_customize->get_section( 'art_theme_group_chrome' );
+
+		if ( $chrome_group instanceof WP_Customize_Section ) {
+			$chrome_group->priority = 95;
+		}
+
+		$header = $wp_customize->get_panel( 'art_theme_header' );
+
+		if ( $header instanceof WP_Customize_Panel ) {
+			$header->title    = __( 'Настройки шапки', 'art-theme' );
+			$header->priority = 100;
+		}
+
+		$footer = $wp_customize->get_panel( 'art_theme_footer' );
+
+		if ( $footer instanceof WP_Customize_Panel ) {
+			$footer->title    = __( 'Настройки подвала', 'art-theme' );
+			$footer->priority = 105;
+		}
+
+		// Внешний вид страниц.
+		$parts_group = $wp_customize->get_section( 'art_theme_group_parts' );
+
+		if ( $parts_group instanceof WP_Customize_Section ) {
+			$parts_group->priority = 110;
+		}
+
+		$parts_order = array(
+			'art_theme_page'      => 115,
+			'art_theme_blog'      => 120,
+			'art_theme_single'    => 130,
+			'art_theme_not_found' => 140,
 		);
 
-		foreach ( $menu_order as $id => $priority ) {
+		foreach ( $parts_order as $id => $priority ) {
 			$item = $wp_customize->get_panel( $id );
 
 			if ( ! $item ) {
@@ -559,11 +788,47 @@ class Art_Theme_Customizer {
 			}
 		}
 
+		// Прочие настройки.
+		$other_group = $wp_customize->get_section( 'art_theme_group_other' );
+
+		if ( $other_group instanceof WP_Customize_Section ) {
+			$other_group->priority = 195;
+		}
+
 		$custom_css = $wp_customize->get_section( 'custom_css' );
 
 		if ( $custom_css instanceof WP_Customize_Section ) {
-			$custom_css->priority = 206;
+			$custom_css->title    = __( 'CSS стили', 'art-theme' );
+			$custom_css->priority = 200;
 		}
+
+		$widgets = $wp_customize->get_panel( 'widgets' );
+
+		if ( $widgets instanceof WP_Customize_Panel ) {
+			$widgets->priority = 210;
+		}
+	}
+
+	/**
+	 * Lower Site Icon minimum size (core default is 512×512).
+	 *
+	 * @param WP_Customize_Manager $wp_customize Customizer instance.
+	 */
+	private static function configure_site_icon_control( $wp_customize ) {
+		$site_icon = $wp_customize->get_control( 'site_icon' );
+
+		if ( ! $site_icon instanceof WP_Customize_Site_Icon_Control ) {
+			return;
+		}
+
+		$site_icon->width  = 128;
+		$site_icon->height = 128;
+		$site_icon->description = sprintf(
+			/* translators: 1: width in pixels, 2: height in pixels */
+			'<p>' . __( 'Иконка сайта отображается во вкладках браузера и в закладках. Она должна быть квадратной формы с разрешением не менее <code>%1$s на %2$s</code> пикселей.', 'art-theme' ) . '</p>',
+			128,
+			128
+		);
 	}
 
 	/**
@@ -580,7 +845,7 @@ class Art_Theme_Customizer {
 			array(
 				'title'       => __( 'Страница 404', 'art-theme' ),
 				'description' => __( 'Текст и кнопка на странице «Страница не найдена». При открытии этого раздела в превью показывается страница 404.', 'art-theme' ),
-				'priority'    => 203,
+				'priority'    => 140,
 			)
 		);
 
@@ -1603,24 +1868,40 @@ class Art_Theme_Customizer {
 	}
 
 	/**
-	 * Preview URL when opening the Customizer from a post/page edit screen in wp-admin.
+	 * Preview URL when opening the Customizer from wp-admin.
+	 *
+	 * Prefers the post/page being edited; otherwise the blog listing
+	 * (avoids ART Starter front-page takeover when using Appearance → Customize).
 	 *
 	 * @return string
 	 */
 	private static function get_admin_customizer_preview_url() {
 		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
 
-		if ( ! $screen || 'post' !== $screen->base ) {
-			return '';
+		if ( $screen && 'post' === $screen->base ) {
+			$post = get_post();
+
+			if ( $post instanceof WP_Post ) {
+				$post_url = self::get_post_customizer_preview_url( $post );
+
+				if ( '' !== $post_url ) {
+					return $post_url;
+				}
+			}
 		}
 
-		$post = get_post();
+		return self::get_blog_customizer_preview_url();
+	}
 
-		if ( ! $post instanceof WP_Post ) {
-			return '';
-		}
+	/**
+	 * Blog archive URL for Customizer preview (posts page or home).
+	 *
+	 * @return string
+	 */
+	private static function get_blog_customizer_preview_url() {
+		$url = art_theme_get_blog_posts_url();
 
-		return self::get_post_customizer_preview_url( $post );
+		return is_string( $url ) ? $url : '';
 	}
 
 	/**
@@ -1737,7 +2018,7 @@ class Art_Theme_Customizer {
 	}
 
 	/**
-	 * Update Appearance → Customize when editing a page in wp-admin.
+	 * Point Appearance → Customize at the current post (when editing) or the blog listing.
 	 */
 	public static function filter_appearance_customize_submenu() {
 		global $submenu;

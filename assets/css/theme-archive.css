@@ -309,7 +309,7 @@
 	margin-top: auto;
 	padding: 0.65rem 1rem;
 	border-radius: 6px;
-	background: var(--art-theme-fg);
+	background: var(--art-theme-accent);
 	color: var(--art-theme-surface);
 	font-size: 0.875rem;
 	font-weight: 500;

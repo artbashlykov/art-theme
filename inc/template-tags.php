@@ -10,8 +10,10 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Merge live Customizer preview values into a stored option array.
  *
- * Nested option settings can keep a stale aggregated root_value; reading
- * WP_Customize_Setting::value() applies the post value reliably.
+ * Nested option settings can keep a stale aggregated root_value. Prefer dirty
+ * post values when present. Do not call Setting::value() over keys that already
+ * exist in $stored — multidimensional_get() uses isset() and cannot read false
+ * (unchecked checkboxes), which would overwrite a correct false from get_option().
  *
  * @param string               $option_key Option name (e.g. art_theme_footer_settings).
  * @param array<string, mixed> $stored     Values from get_option().
@@ -29,6 +31,8 @@ function art_theme_overlay_customizer_option_values( $option_key, $stored, $keys
 		return $stored;
 	}
 
+	$undefined = new stdClass();
+
 	foreach ( $keys as $key ) {
 		$setting_id = $option_key . '[' . $key . ']';
 		$setting    = $wp_customize->get_setting( $setting_id );
@@ -37,7 +41,16 @@ function art_theme_overlay_customizer_option_values( $option_key, $stored, $keys
 			continue;
 		}
 
-		$stored[ $key ] = $setting->value();
+		$post_value = $wp_customize->post_value( $setting, $undefined );
+
+		if ( $undefined !== $post_value ) {
+			$stored[ $key ] = $post_value;
+			continue;
+		}
+
+		if ( ! array_key_exists( $key, $stored ) ) {
+			$stored[ $key ] = $setting->value();
+		}
 	}
 
 	return $stored;

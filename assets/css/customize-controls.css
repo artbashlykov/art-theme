@@ -1,3 +1,88 @@
+/* Root Customizer groups (Общие / Части сайта / Прочие). */
+#customize-theme-controls .control-section-art_theme_group {
+	margin: 0;
+	max-width: 100%;
+	overflow: hidden;
+	pointer-events: none;
+	box-sizing: border-box;
+}
+
+#customize-theme-controls .control-section-art_theme_group > .accordion-section-title,
+#customize-theme-controls .control-section-art_theme_group > .accordion-section-title:hover,
+#customize-theme-controls .control-section-art_theme_group > .accordion-section-title:focus,
+#customize-theme-controls .control-section-art_theme_group > .accordion-section-title:focus-visible,
+#customize-theme-controls .control-section-art_theme_group > .accordion-section-title:active,
+#customize-theme-controls .control-section-art_theme_group.open > .accordion-section-title,
+#customize-theme-controls .control-section-art_theme_group.selected > .accordion-section-title {
+	display: block;
+	max-width: 100%;
+	margin: 0;
+	padding: 0;
+	background: transparent !important;
+	border: 0 !important;
+	border-left: 0 !important;
+	outline: none !important;
+	box-shadow: none !important;
+	box-sizing: border-box;
+	cursor: default;
+	pointer-events: none;
+	user-select: none;
+}
+
+#customize-theme-controls .control-section-art_theme_group > .accordion-section-title .accordion-trigger,
+#customize-theme-controls .control-section-art_theme_group > .accordion-section-title .accordion-trigger:hover,
+#customize-theme-controls .control-section-art_theme_group > .accordion-section-title .accordion-trigger:focus,
+#customize-theme-controls .control-section-art_theme_group > .accordion-section-title .accordion-trigger:focus-visible,
+#customize-theme-controls .control-section-art_theme_group > .accordion-section-title .accordion-trigger:active {
+	display: block;
+	width: 100%;
+	max-width: 100%;
+	margin: 0;
+	padding: 14px 14px 6px;
+	background: transparent !important;
+	border: 0 !important;
+	outline: none !important;
+	box-shadow: none !important;
+	box-sizing: border-box;
+	cursor: default;
+	color: #646970 !important;
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 1.4;
+	letter-spacing: 0.04em;
+	text-align: left;
+	text-transform: uppercase;
+	pointer-events: none;
+	user-select: none;
+}
+
+/* Fallback when WP renders the title without .accordion-trigger. */
+#customize-theme-controls .control-section-art_theme_group > .accordion-section-title:not(:has(.accordion-trigger)) {
+	padding: 14px 14px 6px;
+	color: #646970 !important;
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 1.4;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+#customize-theme-controls .control-section-art_theme_group > .accordion-section-title::after,
+#customize-theme-controls .control-section-art_theme_group > .accordion-section-title .accordion-trigger::after {
+	display: none !important;
+	content: none !important;
+}
+
+#customize-theme-controls .control-section-art_theme_group .accordion-section-content {
+	display: none !important;
+}
+
+#customize-theme-controls .control-section-art_theme_group:focus,
+#customize-theme-controls .control-section-art_theme_group:focus-within {
+	outline: none !important;
+	box-shadow: none !important;
+}
+
 .art-theme-customize-field-row {
 	display: flex;
 	align-items: center;
@@ -94,6 +179,111 @@
 .art-theme-customize-field-row--layout-order .customize-control-title {
 	flex: 1 1 auto;
 	margin-right: 8px;
+}
+
+/*
+ * Color controls: keep Iris DOM intact.
+ * Layout: title | square | reset (one row). Palette opens below the square.
+ */
+#customize-theme-controls .customize-control.art-theme-field-enhanced--color {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 30px auto;
+	grid-template-areas:
+		"title swatch reset"
+		"notify notify notify";
+	align-items: center;
+	column-gap: 10px;
+	row-gap: 4px;
+	margin-bottom: 10px;
+	overflow: visible;
+	position: relative;
+	z-index: 0;
+}
+
+#customize-theme-controls .customize-control.art-theme-field-enhanced--color:has(.wp-picker-active),
+#customize-theme-controls .customize-control.art-theme-field-enhanced--color.art-theme-color-picker-open {
+	z-index: 100000;
+}
+
+#customize-theme-controls .customize-control.art-theme-field-enhanced--color > label {
+	grid-area: title;
+	margin: 0;
+	min-width: 0;
+}
+
+#customize-theme-controls .customize-control.art-theme-field-enhanced--color .customize-control-title {
+	display: block;
+	margin: 0;
+	padding: 0;
+	line-height: 1.3;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+#customize-theme-controls .customize-control.art-theme-field-enhanced--color > .wp-picker-container {
+	grid-area: swatch;
+	position: relative;
+	width: 30px;
+	min-width: 30px;
+	max-width: 30px;
+	margin: 0;
+	justify-self: stretch;
+}
+
+#customize-theme-controls .customize-control.art-theme-field-enhanced--color > .art-theme-customize-reset {
+	grid-area: reset;
+	justify-self: end;
+	position: static;
+	margin: 0;
+}
+
+#customize-theme-controls .customize-control.art-theme-field-enhanced--color > .customize-control-notifications-container {
+	grid-area: notify;
+}
+
+#customize-controls #sub-accordion-section-art_theme_appearance {
+	overflow: visible;
+}
+
+#customize-theme-controls .customize-control.art-theme-field-enhanced--color .wp-picker-container.wp-picker-active {
+	z-index: 2;
+}
+
+/* Hide hex field + WP “Default” — we already have «Сбросить». */
+#customize-theme-controls .customize-control.art-theme-field-enhanced--color .wp-picker-input-wrap {
+	display: none !important;
+}
+
+/* Palette below the square. */
+#customize-theme-controls .customize-control.art-theme-field-enhanced--color .wp-picker-holder {
+	position: absolute !important;
+	top: calc(100% + 6px) !important;
+	left: 0 !important;
+	right: auto !important;
+	width: auto !important;
+	min-width: 255px;
+	z-index: 3;
+}
+
+/* Color square only — hide “Select Color” / «Выбрать цвет». */
+#customize-theme-controls .customize-control.art-theme-field-enhanced--color .wp-color-result {
+	position: relative;
+	display: block;
+	width: 30px !important;
+	height: 30px !important;
+	min-height: 30px !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	border-radius: 4px;
+	box-sizing: border-box;
+	overflow: hidden;
+	float: none !important;
+}
+
+#customize-theme-controls .customize-control.art-theme-field-enhanced--color .wp-color-result-text,
+#customize-theme-controls .customize-control.art-theme-field-enhanced--color .wp-color-result::after {
+	display: none !important;
 }
 
 .customize-control-art_theme_layout_order .art-theme-layout-order {

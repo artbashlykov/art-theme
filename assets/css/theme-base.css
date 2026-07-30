@@ -17,6 +17,7 @@
 	--art-theme-fg: #1a1a1a;
 	--art-theme-muted: #6b6b6b;
 	--art-theme-border: #e5e5e5;
+	--art-theme-accent: #2563eb;
 	--art-theme-width: 850px;
 	--art-theme-single-width: 850px;
 	--art-theme-single-cover-aspect-ratio: 16 / 9;
@@ -32,9 +33,9 @@
 	--art-theme-list-after: 15px;
 	--art-theme-separator-spacing: 10px;
 	--art-theme-card-radius: 12px;
-	--art-theme-category-bg: #eef4ff;
-	--art-theme-category-fg: #2563eb;
-	--art-theme-category-border: #bfdbfe;
+	--art-theme-category-bg: color-mix(in srgb, var(--art-theme-accent) 12%, #ffffff);
+	--art-theme-category-fg: var(--art-theme-accent);
+	--art-theme-category-border: color-mix(in srgb, var(--art-theme-accent) 35%, #ffffff);
 	--art-theme-font: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	--art-theme-font-heading: "Rubik", "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
@@ -66,6 +67,14 @@ a:hover {
 	color: var(--art-theme-muted);
 }
 
+.art-theme-entry-content a {
+	color: var(--art-theme-accent);
+}
+
+.art-theme-entry-content a:hover {
+	color: var(--art-theme-fg);
+}
+
 img {
 	max-width: 100%;
 	height: auto;
@@ -90,6 +99,7 @@ img {
 	flex-direction: column;
 	min-height: 100vh;
 	padding: var(--art-theme-header-top-spacing, 32px) var(--art-theme-space-sm) var(--art-theme-space-lg);
+	background: var(--art-theme-canvas);
 	overflow-x: clip;
 }
 
@@ -176,8 +186,8 @@ img {
 }
 
 .art-theme-pagination .page-numbers .current {
-	background: var(--art-theme-fg);
-	border-color: var(--art-theme-fg);
+	background: var(--art-theme-accent);
+	border-color: var(--art-theme-accent);
 	color: var(--art-theme-surface);
 	font-weight: 600;
 }

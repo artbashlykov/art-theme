@@ -4,7 +4,7 @@ Tags: one-column, custom-menu, custom-logo, featured-images, translation-ready, 
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.14
+Stable tag: 1.0.15
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,6 +46,12 @@ No. The theme is intentionally one-column.
 No. The theme works standalone. If ART Starter is active, footer social icons can use the shared icon registry.
 
 == Changelog ==
+
+= 1.0.15 =
+* Customizer: секция «Цвета и шрифты» (фон, текст, акцент, наборы шрифтов).
+* Customizer: группы настроек (Общие / Шапка и подвал / Внешний вид страниц / Прочие).
+* Шапка: бренд не сжимается; меню сворачивается в бургер при нехватке места без наезда на название.
+* Иконка сайта: минимальный размер 128×128.
 
 = 1.0.14 =
 * Подвал: соцсети можно менять местами перетаскиванием в Customizer.

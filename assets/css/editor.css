@@ -33,6 +33,19 @@
 	border-radius: var(--art-theme-image-radius, 10px);
 }
 
+.editor-styles-wrapper :is(.wp-block-post-content, .is-root-container) a {
+	color: var(--art-theme-accent, #2563eb);
+}
+
+.editor-styles-wrapper :is(h1, h2, h3, h4, h5, h6) {
+	font-family: var(--art-theme-font-heading);
+}
+
+.editor-styles-wrapper {
+	font-family: var(--art-theme-font);
+	color: var(--art-theme-fg, #1a1a1a);
+}
+
 /* Match front-end content column width in the post editor. */
 .editor-styles-wrapper :is(.wp-block-post-content, .is-root-container) {
 	max-width: var(--art-theme-editor-content-width, var(--art-theme-single-width, 850px));

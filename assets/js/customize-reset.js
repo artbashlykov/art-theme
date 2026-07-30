@@ -20,6 +20,7 @@
 		art_theme_blog_card: true,
 		art_theme_single_template: true,
 		art_theme_single_meta: true,
+		art_theme_appearance: true,
 	};
 
 	function getDefaultValue( setting ) {
@@ -40,6 +41,98 @@
 
 	function isCheckedDefault( value ) {
 		return value === true || value === 1 || value === '1';
+	}
+
+	/**
+	 * One-row color control: title | square | reset.
+	 * Keeps Iris DOM intact; reset stays a direct child of the control.
+	 *
+	 * @param {wp.customize.Control} control Control instance.
+	 */
+	function enhanceColorControl( control ) {
+		var $container = control.container;
+
+		if ( $container.hasClass( 'art-theme-field-enhanced' ) || $container.data( 'artThemeColorEnhancing' ) ) {
+			return;
+		}
+
+		$container.data( 'artThemeColorEnhancing', 1 );
+
+		var tries = 0;
+
+		function placeResetButton() {
+			var $btn = $container.children( '.art-theme-customize-reset' ).first();
+
+			if ( ! $btn.length ) {
+				$btn = $container.find( '> .art-theme-customize-reset, .art-theme-customize-reset' ).first();
+			}
+
+			if ( ! $btn.length ) {
+				$btn = $( '<button/>', {
+					type: 'button',
+					class: 'button art-theme-customize-reset art-theme-customize-reset--inline',
+					text: config.label,
+				} );
+
+				$btn.on( 'click', function ( event ) {
+					event.preventDefault();
+
+					if ( ! window.confirm( config.confirm ) ) {
+						return;
+					}
+
+					applyDefaultToControl( control, getDefaultValue( control.setting ) );
+				} );
+			}
+
+			// Always keep reset as a direct child of the control (never inside Iris).
+			$container.append( $btn );
+		}
+
+		function attempt() {
+			if ( $container.hasClass( 'art-theme-field-enhanced' ) ) {
+				return;
+			}
+
+			var $picker = $container.find( '.wp-picker-container' ).first();
+
+			if ( ! $picker.length ) {
+				tries += 1;
+
+				if ( tries < 40 ) {
+					window.setTimeout( attempt, 50 );
+				}
+
+				return;
+			}
+
+			placeResetButton();
+			$container.addClass( 'art-theme-field-enhanced art-theme-field-enhanced--color' );
+			$container.removeData( 'artThemeColorEnhancing' );
+
+			// Iris can re-wrap nodes after init — re-assert button placement once more.
+			window.setTimeout( placeResetButton, 100 );
+
+			var syncOpenClass = function () {
+				var isOpen = $picker.hasClass( 'wp-picker-active' );
+
+				$( '.art-theme-field-enhanced--color' ).removeClass( 'art-theme-color-picker-open' );
+
+				if ( isOpen ) {
+					$container.addClass( 'art-theme-color-picker-open' );
+				}
+			};
+
+			$picker.on( 'click.artThemeColorOpen', '.wp-color-result', function () {
+				window.setTimeout( syncOpenClass, 0 );
+			} );
+
+			$( document ).on( 'click.artThemeColorOpen' + control.id, function () {
+				window.setTimeout( syncOpenClass, 0 );
+			} );
+		}
+
+		attempt();
 	}
 
 	function applyDefaultToControl( control, defaultValue ) {
@@ -91,6 +184,20 @@
 
 			setting.set( checked );
 			control.container.find( 'input[type="checkbox"]' ).prop( 'checked', checked ).trigger( 'change' );
+			return;
+		}
+
+		if ( 'color' === controlType ) {
+			setting.set( defaultValue );
+
+			var $picker = control.container.find( 'input.wp-color-picker' ).first();
+
+			if ( $picker.length && typeof $picker.wpColorPicker === 'function' ) {
+				$picker.wpColorPicker( 'color', defaultValue );
+			} else {
+				$picker.val( defaultValue ).trigger( 'change' );
+			}
+
 			return;
 		}
 
@@ -149,6 +256,12 @@
 				$row = $title.parent();
 				$row.append( $button );
 				control.container.addClass( 'art-theme-field-enhanced' );
+				return;
+			}
+
+			// Color picker: title + square + reset on one row.
+			if ( 'color' === controlType ) {
+				enhanceColorControl( control );
 				return;
 			}
 
