@@ -178,18 +178,21 @@ class Art_Theme_Appearance_Settings {
 			$settings = self::get();
 		}
 
-		$fonts = self::get_font_stacks( $settings );
+		$fonts  = self::get_font_stacks( $settings );
+		$accent = $settings['color_accent'];
+		$text   = $settings['color_text'];
 
 		return array(
-			'--art-theme-canvas'       => $settings['color_canvas'],
-			'--art-theme-surface'      => $settings['color_surface'],
-			'--art-theme-fg'           => $settings['color_text'],
-			'--art-theme-accent'       => $settings['color_accent'],
-			'--art-theme-category-fg'  => $settings['color_accent'],
-			'--art-theme-category-bg'  => 'color-mix(in srgb, ' . $settings['color_accent'] . ' 12%, #ffffff)',
-			'--art-theme-category-border' => 'color-mix(in srgb, ' . $settings['color_accent'] . ' 35%, #ffffff)',
-			'--art-theme-font'         => $fonts['body'],
-			'--art-theme-font-heading' => $fonts['heading'],
+			'--art-theme-canvas'          => $settings['color_canvas'],
+			'--art-theme-surface'         => $settings['color_surface'],
+			'--art-theme-fg'              => $text,
+			'--art-theme-muted'           => 'color-mix(in srgb, ' . $text . ' 55%, #ffffff)',
+			'--art-theme-accent'          => $accent,
+			'--art-theme-category-fg'     => $accent,
+			'--art-theme-category-bg'     => 'color-mix(in srgb, ' . $accent . ' 12%, #ffffff)',
+			'--art-theme-category-border' => 'color-mix(in srgb, ' . $accent . ' 35%, #ffffff)',
+			'--art-theme-font'            => $fonts['body'],
+			'--art-theme-font-heading'    => $fonts['heading'],
 		);
 	}
 

@@ -8,6 +8,18 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
+ * Dedicated handle for appearance CSS variables (always printable).
+ */
+function art_theme_enqueue_appearance_css() {
+	$handle = 'art-theme-appearance';
+
+	wp_register_style( $handle, false, array(), ART_THEME_VERSION );
+	wp_enqueue_style( $handle );
+	wp_add_inline_style( $handle, Art_Theme_Appearance_Settings::get_inline_css() );
+}
+add_action( 'wp_enqueue_scripts', 'art_theme_enqueue_appearance_css', 20 );
+
+/**
  * Enqueue theme stylesheet after WordPress block/global styles.
  */
 function art_theme_enqueue_assets() {
@@ -25,6 +37,7 @@ function art_theme_enqueue_assets() {
 
 	$style_handle = Art_Theme_Styles::get_primary_handle();
 
+	// Keep vars on the primary bundle too (cascade after theme-base.css defaults).
 	wp_add_inline_style( $style_handle, Art_Theme_Appearance_Settings::get_inline_css() );
 
 	if ( ! empty( Art_Theme_Header_Settings::get_visible_order() ) ) {

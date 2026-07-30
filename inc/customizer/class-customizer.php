@@ -20,8 +20,62 @@ class Art_Theme_Customizer {
 		add_action( 'customize_register', array( __CLASS__, 'reorder_sections' ), 999 );
 		add_action( 'customize_controls_enqueue_scripts', array( __CLASS__, 'enqueue_controls_assets' ) );
 		add_action( 'customize_preview_init', array( __CLASS__, 'enqueue_preview_assets' ) );
+		add_action( 'customize_preview_init', array( __CLASS__, 'hide_admin_bar_in_preview' ) );
+		add_action( 'customize_controls_init', array( __CLASS__, 'prefer_blog_preview_from_admin' ) );
 		add_action( 'admin_bar_menu', array( __CLASS__, 'filter_admin_bar_customize_link' ), 100 );
 		add_action( 'admin_menu', array( __CLASS__, 'filter_appearance_customize_submenu' ), 999 );
+	}
+
+	/**
+	 * Hide the admin bar inside the Customizer preview iframe.
+	 */
+	public static function hide_admin_bar_in_preview() {
+		add_filter( 'show_admin_bar', '__return_false' );
+	}
+
+	/**
+	 * When Customizer is opened from wp-admin on the front page (e.g. ART Starter),
+	 * switch the preview to the posts page so theme settings are visible.
+	 */
+	public static function prefer_blog_preview_from_admin() {
+		global $wp_customize;
+
+		if ( ! $wp_customize instanceof WP_Customize_Manager ) {
+			return;
+		}
+
+		$blog_url = self::get_blog_customizer_preview_url();
+		$home_url = home_url( '/' );
+
+		if ( '' === $blog_url || self::urls_match( $blog_url, $home_url ) ) {
+			return;
+		}
+
+		$preview_url = $wp_customize->get_preview_url();
+		$return_url  = $wp_customize->get_return_url();
+
+		if ( ! self::urls_match( $preview_url, $home_url ) ) {
+			return;
+		}
+
+		// Only redirect when returning to wp-admin (Appearance → Customize), not when
+		// the user opened Customizer from the front page via the admin bar.
+		if ( ! is_string( $return_url ) || false === strpos( $return_url, '/wp-admin/' ) ) {
+			return;
+		}
+
+		$wp_customize->set_preview_url( $blog_url );
+	}
+
+	/**
+	 * Compare two URLs ignoring trailing slashes.
+	 *
+	 * @param string $left  First URL.
+	 * @param string $right Second URL.
+	 * @return bool
+	 */
+	private static function urls_match( $left, $right ) {
+		return untrailingslashit( (string) $left ) === untrailingslashit( (string) $right );
 	}
 
 	/**
@@ -38,6 +92,8 @@ class Art_Theme_Customizer {
 			true
 		);
 
+		$defaults = Art_Theme_Appearance_Settings::get_defaults();
+
 		wp_localize_script(
 			'art-theme-customize-preview',
 			'artThemeCustomizePreview',
@@ -50,20 +106,24 @@ class Art_Theme_Customizer {
 				'appearance'             => array(
 					'colors' => array(
 						array(
-							'id'  => Art_Theme_Appearance_Settings::OPTION_KEY . '[color_canvas]',
-							'var' => '--art-theme-canvas',
+							'id'      => Art_Theme_Appearance_Settings::OPTION_KEY . '[color_canvas]',
+							'var'     => '--art-theme-canvas',
+							'default' => $defaults['color_canvas'],
 						),
 						array(
-							'id'  => Art_Theme_Appearance_Settings::OPTION_KEY . '[color_surface]',
-							'var' => '--art-theme-surface',
+							'id'      => Art_Theme_Appearance_Settings::OPTION_KEY . '[color_surface]',
+							'var'     => '--art-theme-surface',
+							'default' => $defaults['color_surface'],
 						),
 						array(
-							'id'  => Art_Theme_Appearance_Settings::OPTION_KEY . '[color_text]',
-							'var' => '--art-theme-fg',
+							'id'      => Art_Theme_Appearance_Settings::OPTION_KEY . '[color_text]',
+							'var'     => '--art-theme-fg',
+							'default' => $defaults['color_text'],
 						),
 						array(
-							'id'  => Art_Theme_Appearance_Settings::OPTION_KEY . '[color_accent]',
-							'var' => '--art-theme-accent',
+							'id'      => Art_Theme_Appearance_Settings::OPTION_KEY . '[color_accent]',
+							'var'     => '--art-theme-accent',
+							'default' => $defaults['color_accent'],
 						),
 					),
 				),
@@ -368,7 +428,7 @@ class Art_Theme_Customizer {
 			'art_theme_appearance',
 			array(
 				'title'       => __( 'Цвета и шрифты', 'art-theme' ),
-				'description' => __( 'Эти настройки задают общий вид сайта. Шапка, подвал и шаблоны страниц настраиваются в разделах ниже.', 'art-theme' ),
+				'description' => __( 'Общий вид страниц темы (блог, записи, страницы). На главной ART Starter эти цвета не применяются — у плагина свой шаблон.', 'art-theme' ),
 				'priority'    => 45,
 			)
 		);
@@ -1954,21 +2014,26 @@ class Art_Theme_Customizer {
 	/**
 	 * Build a Customizer URL that previews the current page/post when possible.
 	 *
+	 * Uses the same relative `customize.php?…` shape as core menu.php so submenu
+	 * links stay valid after admin menu rendering.
+	 *
 	 * @param string $preview_url Front-end URL to preview.
 	 * @return string
 	 */
 	private static function build_customize_url( $preview_url ) {
-		$customize_url = add_query_arg( 'url', rawurlencode( $preview_url ), wp_customize_url() );
+		$args = array(
+			'url' => $preview_url,
+		);
 
 		if ( is_admin() && ! empty( $_SERVER['REQUEST_URI'] ) ) {
 			$return_path = remove_query_arg( wp_removable_query_args(), wp_unslash( $_SERVER['REQUEST_URI'] ) );
 
 			if ( is_string( $return_path ) && '' !== $return_path ) {
-				$customize_url = add_query_arg( 'return', rawurlencode( admin_url( $return_path ) ), $customize_url );
+				$args['return'] = $return_path;
 			}
 		}
 
-		return $customize_url;
+		return add_query_arg( $args, 'customize.php' );
 	}
 
 	/**
@@ -1988,7 +2053,13 @@ class Art_Theme_Customizer {
 		}
 
 		$customize_url = self::build_customize_url( $preview_url );
-		$node          = $wp_admin_bar->get_node( 'customize' );
+
+		// Admin bar links need an absolute URL (may appear on the front end).
+		if ( 0 !== strpos( $customize_url, 'http' ) ) {
+			$customize_url = admin_url( $customize_url );
+		}
+
+		$node = $wp_admin_bar->get_node( 'customize' );
 
 		if ( $node ) {
 			$wp_admin_bar->add_node(
@@ -2029,12 +2100,19 @@ class Art_Theme_Customizer {
 			return;
 		}
 
+		// Relative path like core: esc_url( 'customize.php?url=…&return=…' ).
 		$customize_url = esc_url( self::build_customize_url( $preview_url ) );
 
 		foreach ( $submenu['themes.php'] as &$item ) {
-			if ( ! empty( $item[2] ) && false !== strpos( (string) $item[2], 'customize.php' ) ) {
-				$item[2] = $customize_url;
+			if ( empty( $item[2] ) || ! is_string( $item[2] ) ) {
+				continue;
 			}
+
+			if ( false === strpos( $item[2], 'customize.php' ) ) {
+				continue;
+			}
+
+			$item[2] = $customize_url;
 		}
 
 		unset( $item );

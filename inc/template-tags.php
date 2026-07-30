@@ -341,15 +341,36 @@ function art_theme_has_archive_categories() {
 }
 
 /**
- * Blog posts page URL for the archive filter.
+ * Blog posts page URL for the archive filter and Customizer preview.
+ *
+ * Prefers the Reading → Posts page. With ART Starter as the front page, falls back
+ * to the plugin's managed blog page so Customizer does not open the starter homepage.
  *
  * @return string
  */
 function art_theme_get_blog_posts_url() {
 	$posts_page_id = (int) get_option( 'page_for_posts' );
 
-	if ( $posts_page_id ) {
-		return (string) get_permalink( $posts_page_id );
+	if ( $posts_page_id > 0 ) {
+		$url = get_permalink( $posts_page_id );
+
+		if ( is_string( $url ) && '' !== $url ) {
+			return $url;
+		}
+	}
+
+	if ( class_exists( 'Art_Starter_Reading_Pages', false )
+		&& method_exists( 'Art_Starter_Reading_Pages', 'get_blog_page_id' )
+	) {
+		$starter_blog_id = (int) Art_Starter_Reading_Pages::get_blog_page_id();
+
+		if ( $starter_blog_id > 0 ) {
+			$url = get_permalink( $starter_blog_id );
+
+			if ( is_string( $url ) && '' !== $url ) {
+				return $url;
+			}
+		}
 	}
 
 	return (string) home_url( '/' );

@@ -81,50 +81,86 @@
 		el.textContent = buildCopyrightLine( text );
 	}
 
-	function ensureAppearanceStyleEl() {
-		var el = document.getElementById( 'art-theme-appearance-live' );
+	function normalizeColor( value, fallback ) {
+		var color = String( value || '' ).trim();
 
-		if ( el ) {
-			return el;
+		if ( /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test( color ) ) {
+			return color;
 		}
 
-		el = document.createElement( 'style' );
-		el.id = 'art-theme-appearance-live';
-		document.head.appendChild( el );
-
-		return el;
+		return fallback || '';
 	}
 
 	function paintAppearanceColors() {
-		var css = ':root{';
+		var root = document.documentElement;
 		var i;
 		var item;
 		var value;
+		var accent = '';
+		var text = '';
+
+		if ( ! root || ! root.style || typeof root.style.setProperty !== 'function' ) {
+			return;
+		}
 
 		for ( i = 0; i < colorItems.length; i++ ) {
 			item = colorItems[ i ];
-			value = colorValues[ item.id ];
 
-			if ( ! item || ! item.var || ! value ) {
+			if ( ! item || ! item.var ) {
 				continue;
 			}
 
-			css += item.var + ':' + value + ';';
+			value = normalizeColor( colorValues[ item.id ], item.default );
+
+			if ( ! value ) {
+				continue;
+			}
+
+			root.style.setProperty( item.var, value );
 
 			if ( '--art-theme-accent' === item.var ) {
-				css += '--art-theme-category-fg:' + value + ';';
-				css += '--art-theme-category-bg:color-mix(in srgb,' + value + ' 12%,#ffffff);';
-				css += '--art-theme-category-border:color-mix(in srgb,' + value + ' 35%,#ffffff);';
+				accent = value;
+			}
+
+			if ( '--art-theme-fg' === item.var ) {
+				text = value;
 			}
 		}
 
-		css += '}';
-		ensureAppearanceStyleEl().textContent = css;
+		if ( text ) {
+			root.style.setProperty(
+				'--art-theme-muted',
+				'color-mix(in srgb, ' + text + ' 55%, #ffffff)'
+			);
+		}
+
+		if ( accent ) {
+			root.style.setProperty( '--art-theme-category-fg', accent );
+			root.style.setProperty(
+				'--art-theme-category-bg',
+				'color-mix(in srgb, ' + accent + ' 12%, #ffffff)'
+			);
+			root.style.setProperty(
+				'--art-theme-category-border',
+				'color-mix(in srgb, ' + accent + ' 35%, #ffffff)'
+			);
+		}
+	}
+
+	function bindColorSetting( colorItem ) {
+		api( colorItem.id, function ( setting ) {
+			colorValues[ colorItem.id ] = setting.get();
+			paintAppearanceColors();
+
+			setting.bind( function ( value ) {
+				colorValues[ colorItem.id ] = value;
+				paintAppearanceColors();
+			} );
+		} );
 	}
 
 	function bindAppearanceColors() {
 		var i;
-		var item;
 
 		if ( appearanceBound || ! colorItems.length ) {
 			return;
@@ -133,25 +169,11 @@
 		appearanceBound = true;
 
 		for ( i = 0; i < colorItems.length; i++ ) {
-			item = colorItems[ i ];
-
-			( function ( colorItem ) {
-				api( colorItem.id, function ( setting ) {
-					colorValues[ colorItem.id ] = setting.get();
-					paintAppearanceColors();
-
-					setting.bind( function ( value ) {
-						colorValues[ colorItem.id ] = value;
-						paintAppearanceColors();
-					} );
-				} );
-			}( item ) );
+			bindColorSetting( colorItems[ i ] );
 		}
 
-		// Fallback: catch updates if deferred api(id) callbacks lag.
 		api.bind( 'change', function ( setting ) {
 			var j;
-			var match = null;
 
 			if ( ! setting || ! setting.id ) {
 				return;
@@ -159,17 +181,11 @@
 
 			for ( j = 0; j < colorItems.length; j++ ) {
 				if ( colorItems[ j ].id === setting.id ) {
-					match = colorItems[ j ];
-					break;
+					colorValues[ setting.id ] = setting.get();
+					paintAppearanceColors();
+					return;
 				}
 			}
-
-			if ( ! match ) {
-				return;
-			}
-
-			colorValues[ match.id ] = setting.get();
-			paintAppearanceColors();
 		} );
 	}
 
@@ -194,12 +210,14 @@
 		} );
 	}
 
-	api.bind( 'ready', function () {
+	api.bind( 'preview-ready', function () {
 		bindAppearanceColors();
 		bindCopyright();
 	} );
 
-	api.bind( 'preview-ready', function () {
+	// Fallback if preview-ready already fired before this script ran.
+	if ( api.settings && api.settings.values ) {
 		bindAppearanceColors();
-	} );
+		bindCopyright();
+	}
 }( wp.customize, window.artThemeCustomizePreview || null ) );
