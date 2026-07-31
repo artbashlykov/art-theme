@@ -2017,20 +2017,31 @@ class Art_Theme_Customizer {
 	 * Uses the same relative `customize.php?…` shape as core menu.php so submenu
 	 * links stay valid after admin menu rendering.
 	 *
+	 * Important: `add_query_arg()` / `build_query()` do not encode values. The
+	 * preview URL must be urlencoded before add_query_arg (as in core admin-bar.php).
+	 * Otherwise `esc_url( 'customize.php?url=https://…' )` returns empty and the
+	 * Appearance → Customize link becomes a no-op page refresh.
+	 *
 	 * @param string $preview_url Front-end URL to preview.
 	 * @return string
 	 */
 	private static function build_customize_url( $preview_url ) {
-		$args = array(
-			'url' => $preview_url,
-		);
+		$args = array();
+
+		if ( is_string( $preview_url ) && '' !== $preview_url ) {
+			$args['url'] = rawurlencode( $preview_url );
+		}
 
 		if ( is_admin() && ! empty( $_SERVER['REQUEST_URI'] ) ) {
 			$return_path = remove_query_arg( wp_removable_query_args(), wp_unslash( $_SERVER['REQUEST_URI'] ) );
 
 			if ( is_string( $return_path ) && '' !== $return_path ) {
-				$args['return'] = $return_path;
+				$args['return'] = rawurlencode( $return_path );
 			}
+		}
+
+		if ( empty( $args ) ) {
+			return 'customize.php';
 		}
 
 		return add_query_arg( $args, 'customize.php' );
@@ -2055,7 +2066,7 @@ class Art_Theme_Customizer {
 		$customize_url = self::build_customize_url( $preview_url );
 
 		// Admin bar links need an absolute URL (may appear on the front end).
-		if ( 0 !== strpos( $customize_url, 'http' ) ) {
+		if ( ! preg_match( '#^https?://#i', $customize_url ) ) {
 			$customize_url = admin_url( $customize_url );
 		}
 
@@ -2100,8 +2111,11 @@ class Art_Theme_Customizer {
 			return;
 		}
 
-		// Relative path like core: esc_url( 'customize.php?url=…&return=…' ).
-		$customize_url = esc_url( self::build_customize_url( $preview_url ) );
+		$relative = self::build_customize_url( $preview_url );
+		$escaped  = esc_url( $relative );
+
+		// Fallback if esc_url rejects the relative link (must never blank the menu href).
+		$customize_url = ( is_string( $escaped ) && '' !== $escaped ) ? $escaped : $relative;
 
 		foreach ( $submenu['themes.php'] as &$item ) {
 			if ( empty( $item[2] ) || ! is_string( $item[2] ) ) {
