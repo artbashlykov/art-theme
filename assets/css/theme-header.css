@@ -482,7 +482,12 @@
 	align-items: center;
 	gap: 10px;
 	min-width: 0;
-	flex: 1 1 auto;
+	flex: 1 1 0;
+	overflow: hidden;
+}
+
+.art-theme-site-header__mobile-brand .art-theme-site-header__item--logo {
+	flex: 0 0 auto;
 }
 
 .art-theme-site-header__mobile-brand .art-theme-site-header__brand-identity {
@@ -491,6 +496,17 @@
 	justify-content: center;
 	gap: 2px;
 	min-width: 0;
+	flex: 1 1 auto;
+	overflow: hidden;
+}
+
+.art-theme-site-header__mobile-brand .art-theme-site-header__title,
+.art-theme-site-header__mobile-brand .art-theme-site-header__tagline {
+	display: block;
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .art-theme-site-header__mobile-actions {
@@ -498,6 +514,8 @@
 	align-items: center;
 	justify-content: flex-end;
 	flex: 0 0 auto;
+	position: relative;
+	z-index: 2;
 }
 
 .art-theme-site-header__mobile-bar {

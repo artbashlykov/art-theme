@@ -44,6 +44,39 @@
 	}
 
 	/**
+	 * Keep the setting in the Customizer changeset after reset.
+	 *
+	 * Without `_dirty`, preview refresh (e.g. after creating a menu) POSTs only
+	 * dirty settings and the reset is lost — the saved DB value returns.
+	 *
+	 * @param {wp.customize.Setting|wp.customize.Value} setting Setting instance.
+	 */
+	function markSettingDirty( setting ) {
+		if ( setting ) {
+			setting._dirty = true;
+		}
+
+		if ( api.state( 'saved' ) ) {
+			api.state( 'saved' ).set( false );
+		}
+	}
+
+	/**
+	 * Apply a value to a setting and keep it dirty for preview refresh / publish.
+	 *
+	 * @param {wp.customize.Setting|wp.customize.Value} setting Setting instance.
+	 * @param {*}                                       value   New value.
+	 */
+	function setSettingValue( setting, value ) {
+		if ( ! setting ) {
+			return;
+		}
+
+		setting.set( value );
+		markSettingDirty( setting );
+	}
+
+	/**
 	 * One-row color control: title | square | reset.
 	 * Keeps Iris DOM intact; reset stays a direct child of the control.
 	 *
@@ -135,6 +168,54 @@
 		attempt();
 	}
 
+	/**
+	 * Reset a color control without letting Iris restore the previous color.
+	 *
+	 * @param {wp.customize.Control} control      Control instance.
+	 * @param {string}               defaultValue Default hex color.
+	 */
+	function applyColorDefault( control, defaultValue ) {
+		var setting = control.setting;
+		var value = String( defaultValue || '' );
+		var $input = control.container.find( 'input.wp-color-picker' ).first();
+		var $result = control.container.find( '.wp-color-result' ).first();
+		var unlockTimer = null;
+
+		if ( ! setting ) {
+			return;
+		}
+
+		// While Iris settles, force the reset value if a stale change event fires.
+		var guard = function ( to ) {
+			if ( to !== value ) {
+				setting.set( value );
+				markSettingDirty( setting );
+			}
+		};
+
+		setting.bind( guard );
+		setSettingValue( setting, value );
+
+		if ( $input.length ) {
+			$input.val( value );
+
+			if ( $result.length ) {
+				$result.css( { 'background-color': value } );
+			}
+
+			// Prefer native change over wpColorPicker('color') — Iris can race and
+			// write the previous color back into the setting.
+			$input.trigger( 'change' );
+			setSettingValue( setting, value );
+		}
+
+		unlockTimer = window.setTimeout( function () {
+			setting.unbind( guard );
+			setSettingValue( setting, value );
+			unlockTimer = null;
+		}, 100 );
+	}
+
 	function applyDefaultToControl( control, defaultValue ) {
 		var controlType = control.params.type;
 		var setting = control.setting;
@@ -152,7 +233,7 @@
 				defaultOrder = [];
 			}
 
-			setting.set( defaultOrder );
+			setSettingValue( setting, defaultOrder );
 
 			if ( window.artThemeLayoutOrder ) {
 				var $field = control.container.find( '.art-theme-layout-order-field' ).first();
@@ -170,7 +251,7 @@
 			var $footerField = control.container.find( '.art-theme-footer-repeater' ).first();
 			var footerType = $footerField.data( 'repeater-type' ) || 'socials';
 
-			setting.set( footerItems );
+			setSettingValue( setting, footerItems );
 
 			if ( window.artThemeFooterRepeater ) {
 				window.artThemeFooterRepeater.renderRows( $footerField, footerItems, footerType );
@@ -182,32 +263,26 @@
 		if ( 'checkbox' === controlType ) {
 			var checked = isCheckedDefault( defaultValue );
 
-			setting.set( checked );
+			setSettingValue( setting, checked );
 			control.container.find( 'input[type="checkbox"]' ).prop( 'checked', checked ).trigger( 'change' );
+			markSettingDirty( setting );
 			return;
 		}
 
 		if ( 'color' === controlType ) {
-			setting.set( defaultValue );
-
-			var $picker = control.container.find( 'input.wp-color-picker' ).first();
-
-			if ( $picker.length && typeof $picker.wpColorPicker === 'function' ) {
-				$picker.wpColorPicker( 'color', defaultValue );
-			} else {
-				$picker.val( defaultValue ).trigger( 'change' );
-			}
-
+			applyColorDefault( control, defaultValue );
 			return;
 		}
 
-		setting.set( defaultValue );
+		setSettingValue( setting, defaultValue );
 
 		control.container
 			.find( 'input[type="text"], input[type="number"], input[type="url"], textarea, select' )
 			.first()
 			.val( defaultValue )
 			.trigger( 'change' );
+
+		markSettingDirty( setting );
 	}
 
 	function enhanceControl( control ) {
