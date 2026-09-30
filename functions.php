@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ART_THEME_VERSION', '1.0.18' );
+define( 'ART_THEME_VERSION', '1.0.19' );
 define( 'ART_THEME_SLUG', 'art-theme' );
 define( 'ART_THEME_DIR', get_template_directory() );
 define( 'ART_THEME_URL', get_template_directory_uri() );
@@ -24,8 +24,10 @@ require_once ART_THEME_DIR . '/inc/template-tags.php';
 require_once ART_THEME_DIR . '/inc/admin/class-blog-settings.php';
 require_once ART_THEME_DIR . '/inc/admin/class-single-settings.php';
 require_once ART_THEME_DIR . '/inc/admin/class-page-settings.php';
+require_once ART_THEME_DIR . '/inc/admin/class-title-visibility.php';
 require_once ART_THEME_DIR . '/inc/admin/class-header-settings.php';
 require_once ART_THEME_DIR . '/inc/admin/class-footer-settings.php';
+require_once ART_THEME_DIR . '/inc/admin/class-install-defaults.php';
 require_once ART_THEME_DIR . '/inc/admin/class-not-found-settings.php';
 require_once ART_THEME_DIR . '/inc/admin/class-appearance-settings.php';
 require_once ART_THEME_DIR . '/inc/class-social-icons.php';
@@ -42,8 +44,10 @@ add_action( 'after_setup_theme', 'art_theme_setup' );
 Art_Theme_Blog_Settings::init();
 Art_Theme_Single_Settings::init();
 Art_Theme_Page_Settings::init();
+Art_Theme_Title_Visibility::init();
 Art_Theme_Header_Settings::init();
 Art_Theme_Footer_Settings::init();
+Art_Theme_Install_Defaults::init();
 Art_Theme_Not_Found_Settings::init();
 Art_Theme_Appearance_Settings::init();
 Art_Theme_Customizer::init();

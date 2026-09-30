@@ -191,7 +191,7 @@ class Art_Theme_Page_Settings {
 			$post_id = (int) get_queried_object_id();
 		}
 
-		return self::sanitize_page_hide_title( get_post_meta( (int) $post_id, self::META_HIDE_TITLE, true ) );
+		return Art_Theme_Title_Visibility::should_hide_title( (int) $post_id );
 	}
 
 	/**

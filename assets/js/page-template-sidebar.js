@@ -15,9 +15,22 @@
 	var useSelect = wp.data && wp.data.useSelect;
 	var useEntityProp = wp.coreData && wp.coreData.useEntityProp;
 	var createElement = wp.element && wp.element.createElement;
-	var META_HIDE_TITLE = 'art_theme_page_hide_title';
+	var META_HIDE_TITLE = 'art_theme_hide_title';
+	var META_HIDE_TITLE_LEGACY = 'art_theme_page_hide_title';
 	var supportedPostTypes = Array.isArray( config.supportedPostTypes ) ? config.supportedPostTypes : [ 'page' ];
 	var hideTitlePostTypes = Array.isArray( config.hideTitlePostTypes ) ? config.hideTitlePostTypes : [ 'page' ];
+
+	function readHideTitle( meta ) {
+		if ( ! meta ) {
+			return false;
+		}
+
+		if ( Object.prototype.hasOwnProperty.call( meta, META_HIDE_TITLE ) && null !== meta[ META_HIDE_TITLE ] && '' !== meta[ META_HIDE_TITLE ] ) {
+			return !! meta[ META_HIDE_TITLE ];
+		}
+
+		return !! meta[ META_HIDE_TITLE_LEGACY ];
+	}
 
 	function usePageLayoutMeta() {
 		var postType = useSelect( function ( select ) {
@@ -33,13 +46,14 @@
 			postType: postType,
 			meta: metaState[ 0 ] || {},
 			setMeta: metaState[ 1 ],
-			hideTitle: !!( metaState[ 0 ] && metaState[ 0 ][ META_HIDE_TITLE ] ),
+			hideTitle: readHideTitle( metaState[ 0 ] ),
 		};
 	}
 
 	function setHideTitle( meta, setMeta, hideTitle ) {
 		var next = Object.assign( {}, meta );
 		next[ META_HIDE_TITLE ] = hideTitle;
+		next[ META_HIDE_TITLE_LEGACY ] = hideTitle;
 		setMeta( next );
 	}
 

@@ -45,7 +45,7 @@ class Art_Theme_Blog_Settings {
 			'all_categories_label'    => __( 'Все категории', 'art-theme' ),
 			'cover_aspect_ratio'      => '2-1',
 			'show_thumbnail'        => true,
-			'show_category'         => true,
+			'show_category'         => false,
 			'show_date'             => true,
 			'show_reading_time'     => true,
 			'show_excerpt'          => true,
@@ -53,6 +53,18 @@ class Art_Theme_Blog_Settings {
 			'show_read_button'      => true,
 			'read_button_text'      => __( 'Читать статью →', 'art-theme' ),
 		);
+	}
+
+	/**
+	 * Defaults used before blog cards hid the category by default.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public static function get_legacy_install_defaults() {
+		$defaults                   = self::get_defaults();
+		$defaults['show_category']  = true;
+
+		return $defaults;
 	}
 
 	/**

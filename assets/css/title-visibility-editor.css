@@ -1,0 +1,86 @@
+/**
+ * Gutenberg title visibility switch (left of H1).
+ */
+
+.art-theme-editor-title-shell {
+	position: relative !important;
+}
+
+.art-theme-title-switch {
+	position: absolute;
+	z-index: 5;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	cursor: pointer;
+	border-radius: 999px;
+	/* Default: sit just left of the title text, vertically centered on the first line. */
+	transform: translate(-100%, -50%);
+	-webkit-tap-highlight-color: transparent;
+}
+
+.art-theme-title-switch:focus-visible {
+	outline: 2px solid #2271b1;
+	outline-offset: 2px;
+}
+
+.art-theme-title-switch__track {
+	position: relative;
+	display: block;
+	width: 40px;
+	height: 22px;
+	border-radius: 999px;
+	background: #22c55e;
+	box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+	transition: background-color 0.15s ease;
+	pointer-events: none;
+}
+
+.art-theme-title-switch.is-off .art-theme-title-switch__track {
+	background: #ef4444;
+}
+
+.art-theme-title-switch__thumb {
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	background: #fff;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+	transition: transform 0.15s ease;
+}
+
+.art-theme-title-switch.is-off .art-theme-title-switch__thumb {
+	transform: translateX(18px);
+}
+
+/* Phone / narrow editor canvas: stack above the title, aligned to text start. */
+.art-theme-editor-title-shell.is-switch-stacked {
+	padding-top: 48px !important;
+}
+
+.art-theme-editor-title-shell.is-switch-stacked .art-theme-title-switch {
+	transform: translate(0, -100%);
+}
+
+.art-theme-editor-title-shell.is-title-hidden .editor-post-title__input,
+.art-theme-editor-title-shell.is-title-hidden .editor-post-title,
+.art-theme-editor-title-shell.is-title-hidden .wp-block-post-title,
+.art-theme-editor-title-shell.is-title-hidden h1,
+.art-theme-editor-title-shell.is-title-hidden textarea {
+	color: #8c8f94 !important;
+	opacity: 0.72;
+}
+
+.art-theme-editor-title-shell.is-title-hidden .editor-post-title__input::placeholder {
+	color: #8c8f94;
+	opacity: 1;
+}

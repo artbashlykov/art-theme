@@ -44,13 +44,13 @@ class Art_Theme_Footer_Settings {
 	}
 
 	/**
-	 * Default settings.
+	 * Default settings for new installs and Customizer reset.
 	 *
 	 * @return array<string, mixed>
 	 */
 	public static function get_defaults() {
 		return array(
-			'footer_template'           => self::TEMPLATE_CLASSIC,
+			'footer_template'           => self::TEMPLATE_FLOATING,
 			'footer_structure'          => self::STRUCTURE_COLUMNS,
 			'footer_top_spacing'        => self::FOOTER_TOP_SPACING_DEFAULT,
 			'footer_bottom_spacing'     => self::FOOTER_BOTTOM_SPACING_DEFAULT,
@@ -66,6 +66,18 @@ class Art_Theme_Footer_Settings {
 			'custom_links'              => array(),
 			'copyright_text'            => '',
 		);
+	}
+
+	/**
+	 * Defaults used before floating footer became the fresh-install baseline.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public static function get_legacy_install_defaults() {
+		$defaults                    = self::get_defaults();
+		$defaults['footer_template'] = self::TEMPLATE_CLASSIC;
+
+		return $defaults;
 	}
 
 	/**

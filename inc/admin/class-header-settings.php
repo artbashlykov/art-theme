@@ -49,13 +49,13 @@ class Art_Theme_Header_Settings {
 	}
 
 	/**
-	 * Default settings.
+	 * Default settings for new installs and Customizer reset.
 	 *
 	 * @return array<string, mixed>
 	 */
 	public static function get_defaults() {
 		return array(
-			'header_template'       => self::TEMPLATE_CLASSIC,
+			'header_template'       => self::TEMPLATE_FLOATING,
 			'header_top_spacing'    => self::HEADER_TOP_SPACING_DEFAULT,
 			'header_bottom_spacing' => self::HEADER_BOTTOM_SPACING_DEFAULT,
 			'header_width_mode'          => self::WIDTH_MODE_FIXED,
@@ -67,11 +67,28 @@ class Art_Theme_Header_Settings {
 			'show_menu'     => true,
 			'show_button'   => true,
 			'menu_collapse_desktop' => true,
-			'button_label'         => __( 'Личный кабинет', 'art-theme' ),
-			'button_url'           => '#',
-			'button_open_new_tab'  => true,
+			'button_label'         => __( 'Главная', 'art-theme' ),
+			'button_url'           => home_url( '/' ),
+			'button_open_new_tab'  => false,
 			'header_menu_id' => 0,
 		);
+	}
+
+	/**
+	 * Defaults used before floating header / «Главная» became the fresh-install baseline.
+	 *
+	 * Kept so existing sites that never saved these keys keep their previous look.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public static function get_legacy_install_defaults() {
+		$defaults                     = self::get_defaults();
+		$defaults['header_template']  = self::TEMPLATE_CLASSIC;
+		$defaults['button_label']     = __( 'Личный кабинет', 'art-theme' );
+		$defaults['button_url']       = '#';
+		$defaults['button_open_new_tab'] = true;
+
+		return $defaults;
 	}
 
 	/**

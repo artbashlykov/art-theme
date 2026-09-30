@@ -1389,7 +1389,7 @@ class Art_Theme_Customizer {
 			'art_theme_blog_show_category',
 			'art_theme_blog_card',
 			__( 'Показывать рубрику', 'art-theme' ),
-			1
+			! empty( $defaults['show_category'] )
 		);
 
 		self::add_checkbox_control(
@@ -1682,7 +1682,7 @@ class Art_Theme_Customizer {
 			'art_theme_single_show_category',
 			'art_theme_single_meta',
 			__( 'Показывать рубрику', 'art-theme' ),
-			0
+			! empty( $defaults['show_category'] )
 		);
 
 		self::add_checkbox_control(

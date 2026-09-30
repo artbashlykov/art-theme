@@ -136,7 +136,9 @@ function art_theme_should_show_singular_entry_title( $post_id = null ) {
 		$post_id = get_the_ID();
 	}
 
-	if ( $post_id && is_page( $post_id ) && Art_Theme_Page_Settings::page_should_hide_title( $post_id ) ) {
+	$post_id = (int) $post_id;
+
+	if ( $post_id && Art_Theme_Title_Visibility::should_hide_title( $post_id ) ) {
 		return false;
 	}
 
@@ -146,7 +148,7 @@ function art_theme_should_show_singular_entry_title( $post_id = null ) {
 	 * @param bool $show    Whether to show the title.
 	 * @param int  $post_id Post ID.
 	 */
-	return (bool) apply_filters( 'art_theme_show_singular_entry_title', true, (int) $post_id );
+	return (bool) apply_filters( 'art_theme_show_singular_entry_title', true, $post_id );
 }
 
 add_filter(
@@ -595,7 +597,7 @@ function art_theme_should_render_single_layout_item( $item, $settings ) {
 	}
 
 	if ( 'title' === $item ) {
-		return true;
+		return art_theme_should_show_singular_entry_title();
 	}
 
 	if ( 'meta' === $item ) {

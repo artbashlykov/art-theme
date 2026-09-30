@@ -4,7 +4,7 @@ Tags: one-column, custom-menu, custom-logo, featured-images, translation-ready, 
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.18
+Stable tag: 1.0.19
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,6 +46,11 @@ No. The theme is intentionally one-column.
 No. The theme works standalone. If ART Starter is active, footer social icons can use the shared icon registry.
 
 == Changelog ==
+
+= 1.0.19 =
+* Gutenberg: переключатель видимости заголовка слева от H1 (записи и страницы).
+* Новые установки: плавающая шапка/подвал, кнопка «Главная» на главную в том же окне.
+* Новые установки: рубрика скрыта в карточке блога и в записи (старые сайты без изменений).
 
 = 1.0.18 =
 * Customizer: сброс настроек сохраняется после обновления превью (например, при создании меню).
