@@ -26,7 +26,7 @@ class Art_Theme_Page_Settings {
 	/**
 	 * Per-page template override slugs (block editor).
 	 */
-	const PAGE_TEMPLATE_OVERRIDE_VARIANTS = array( 'default', 'boxed', 'full-width' );
+	const PAGE_TEMPLATE_OVERRIDE_VARIANTS = array( 'default', 'boxed', 'full-width', 'blank' );
 
 	/**
 	 * Register hooks.
@@ -120,7 +120,11 @@ class Art_Theme_Page_Settings {
 		$override = self::get_page_template_override( $post_id );
 
 		if ( 'default' !== $override ) {
-			$settings['template_variant'] = self::sanitize_template_variant( $override );
+			if ( Art_Theme_Content_Template::TEMPLATE_VARIANT_BLANK === $override ) {
+				$settings['template_variant'] = Art_Theme_Content_Template::TEMPLATE_VARIANT_BLANK;
+			} else {
+				$settings['template_variant'] = self::sanitize_template_variant( $override );
+			}
 		}
 
 		return $settings;
@@ -302,6 +306,7 @@ class Art_Theme_Page_Settings {
 				'choices'              => $choices,
 				'supportedPostTypes'   => self::get_page_layout_post_types(),
 				'defaultHelp'          => __( 'Наследует шаблон «Контентный блок» из настроек темы.', 'art-theme' ),
+				'blankHelp'            => __( 'Только контент страницы — без шапки и подвала. Ширина как у обычной страницы.', 'art-theme' ),
 				'panelTitle'           => __( 'Шаблон страницы', 'art-theme' ),
 				'controlLabel'         => __( 'Шаблон', 'art-theme' ),
 				'hideTitleLabel'       => __( 'Скрыть заголовок страницы', 'art-theme' ),
@@ -385,10 +390,32 @@ class Art_Theme_Page_Settings {
 	 */
 	public static function is_full_width_template( $settings = null ) {
 		if ( null === $settings ) {
-			$settings = self::get();
+			$settings = self::get_for_singular();
+		}
+
+		if ( self::is_blank_template( $settings ) ) {
+			return false;
 		}
 
 		return Art_Theme_Content_Template::is_full_width_template( $settings );
+	}
+
+	/**
+	 * Whether the page uses the blank template (no header/footer).
+	 *
+	 * @param array<string, mixed>|null $settings Optional settings array.
+	 * @return bool
+	 */
+	public static function is_blank_template( $settings = null ) {
+		if ( null === $settings ) {
+			if ( ! is_singular() ) {
+				return false;
+			}
+
+			$settings = self::get_for_singular();
+		}
+
+		return Art_Theme_Content_Template::is_blank_template( $settings );
 	}
 
 	/**

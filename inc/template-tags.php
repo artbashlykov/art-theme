@@ -126,6 +126,34 @@ function art_theme_is_page_template_view() {
 }
 
 /**
+ * Whether the current singular view uses the blank (no header/footer) template.
+ *
+ * @return bool
+ */
+function art_theme_is_blank_template_view() {
+	if ( ! art_theme_is_page_template_view() ) {
+		return false;
+	}
+
+	return Art_Theme_Page_Settings::is_blank_template();
+}
+
+/**
+ * Body classes for blank page template.
+ *
+ * @param array<int, string> $classes Body classes.
+ * @return array<int, string>
+ */
+function art_theme_filter_body_class( $classes ) {
+	if ( art_theme_is_blank_template_view() ) {
+		$classes[] = 'art-theme-blank-template';
+	}
+
+	return $classes;
+}
+add_filter( 'body_class', 'art_theme_filter_body_class' );
+
+/**
  * Whether the theme should render the entry title for the current singular item.
  *
  * @param int|null $post_id Optional post ID.
@@ -526,7 +554,9 @@ function art_theme_get_canvas_modifier_class() {
 
 		$classes[] = 'art-theme-canvas--page';
 
-		if ( Art_Theme_Page_Settings::is_full_width_template( $page_settings ) ) {
+		if ( Art_Theme_Page_Settings::is_blank_template( $page_settings ) ) {
+			$classes[] = 'art-theme-canvas--page-blank';
+		} elseif ( Art_Theme_Page_Settings::is_full_width_template( $page_settings ) ) {
 			$classes[] = 'art-theme-canvas--page-full';
 		}
 	} elseif ( is_404() ) {
@@ -535,7 +565,7 @@ function art_theme_get_canvas_modifier_class() {
 		$classes[] = 'art-theme-canvas--archive';
 	}
 
-	if ( Art_Theme_Footer_Settings::has_visible_content() ) {
+	if ( ! art_theme_is_blank_template_view() && Art_Theme_Footer_Settings::has_visible_content() ) {
 		$classes[] = 'art-theme-canvas--has-footer';
 	}
 
@@ -572,7 +602,9 @@ function art_theme_get_shell_modifier_class() {
 		$page_settings = Art_Theme_Page_Settings::get_for_singular();
 		$classes       = ' art-theme-shell--page';
 
-		if ( Art_Theme_Page_Settings::is_full_width_template( $page_settings ) ) {
+		if ( Art_Theme_Page_Settings::is_blank_template( $page_settings ) ) {
+			$classes .= ' art-theme-shell--page-blank';
+		} elseif ( Art_Theme_Page_Settings::is_full_width_template( $page_settings ) ) {
 			$classes .= ' art-theme-shell--page-full';
 		} else {
 			$classes .= ' art-theme-shell--page-boxed';

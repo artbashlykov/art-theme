@@ -14,17 +14,18 @@ class Art_Theme_Content_Template {
 
 	const TEMPLATE_VARIANT_BOXED      = 'boxed';
 	const TEMPLATE_VARIANT_FULL_WIDTH = 'full-width';
+	const TEMPLATE_VARIANT_BLANK      = 'blank';
 
 	const TEMPLATE_VARIANTS = array(
 		self::TEMPLATE_VARIANT_BOXED,
 		self::TEMPLATE_VARIANT_FULL_WIDTH,
 	);
 
-	const CONTENT_WIDTH_DEFAULT         = 850;
-	const BOXED_BORDER_RADIUS_DEFAULT     = 10;
-	const BOXED_SHADOW_DEFAULT          = 'medium';
-	const BOXED_PADDING_BLOCK_DEFAULT   = 32;
-	const BOXED_PADDING_INLINE_DEFAULT    = 24;
+	const CONTENT_WIDTH_DEFAULT       = 850;
+	const BOXED_BORDER_RADIUS_DEFAULT = 10;
+	const BOXED_SHADOW_DEFAULT        = 'medium';
+	const BOXED_PADDING_BLOCK_DEFAULT = 32;
+	const BOXED_PADDING_INLINE_DEFAULT = 24;
 
 	/**
 	 * Shared boxed layout defaults (without content-width key name).
@@ -63,6 +64,7 @@ class Art_Theme_Content_Template {
 			'default'                         => __( 'По умолчанию', 'art-theme' ),
 			self::TEMPLATE_VARIANT_BOXED      => __( 'Контентный блок', 'art-theme' ),
 			self::TEMPLATE_VARIANT_FULL_WIDTH => __( 'Фон на всю ширину', 'art-theme' ),
+			self::TEMPLATE_VARIANT_BLANK      => __( 'Без шапки и подвала', 'art-theme' ),
 		);
 	}
 
@@ -106,5 +108,15 @@ class Art_Theme_Content_Template {
 	 */
 	public static function is_full_width_template( $settings ) {
 		return self::TEMPLATE_VARIANT_FULL_WIDTH === self::sanitize_template_variant( $settings['template_variant'] ?? self::TEMPLATE_VARIANT_BOXED );
+	}
+
+	/**
+	 * Whether settings use the blank (no header/footer) template.
+	 *
+	 * @param array<string, mixed> $settings Settings array with template_variant.
+	 * @return bool
+	 */
+	public static function is_blank_template( $settings ) {
+		return self::TEMPLATE_VARIANT_BLANK === sanitize_key( (string) ( $settings['template_variant'] ?? '' ) );
 	}
 }

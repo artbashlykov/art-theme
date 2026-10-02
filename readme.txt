@@ -4,7 +4,7 @@ Tags: one-column, custom-menu, custom-logo, featured-images, translation-ready, 
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.19
+Stable tag: 1.0.20
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,7 +19,7 @@ Main features:
 * Customizable site header (templates, menu, logo, spacing)
 * Customizable footer (structure, social links, copyright)
 * Blog archive with cards, columns, and category filter
-* Single post and page templates (boxed and full-width)
+* Single post and page templates (boxed, full-width, and blank without header/footer)
 * One-column layout on a gray canvas — no sidebar
 * Gutenberg block editor for post and page content
 * Bundled Manrope and Rubik web fonts (latin, cyrillic) — no external font CDN
@@ -46,6 +46,9 @@ No. The theme is intentionally one-column.
 No. The theme works standalone. If ART Starter is active, footer social icons can use the shared icon registry.
 
 == Changelog ==
+
+= 1.0.20 =
+* Страницы: шаблон «Без шапки и подвала» — только контент, ширина как у обычной страницы.
 
 = 1.0.19 =
 * Gutenberg: переключатель видимости заголовка слева от H1 (записи и страницы).

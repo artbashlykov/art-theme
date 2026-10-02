@@ -96,6 +96,82 @@
 	}
 }
 
+/* Static page — blank canvas: no header/footer, content in a centered column.
+ * Scoped only to blank template. Resists page-content CSS that restyles `body`
+ * as a flex centering wrapper (common in “full page” HTML embeds). */
+body.art-theme-blank-template {
+	display: block !important;
+	align-items: stretch !important;
+	justify-content: flex-start !important;
+	width: 100%;
+	min-height: 100vh;
+	box-sizing: border-box;
+}
+
+.art-theme-canvas--page-blank {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+	max-width: none;
+	min-height: 100vh;
+	margin: 0;
+	padding: 0;
+	background: transparent;
+	box-sizing: border-box;
+}
+
+.art-theme-shell--page-blank {
+	width: 100%;
+	max-width: var(--art-theme-page-width, var(--art-theme-width, 850px));
+	margin-block: auto;
+	margin-inline: auto;
+	padding-block: 0;
+	padding-inline: var(--art-theme-page-gutter, 1.5rem);
+	background: transparent;
+	box-shadow: none;
+	box-sizing: border-box;
+}
+
+.art-theme-shell--page-blank .art-theme-main,
+.art-theme-post--page-blank {
+	width: 100%;
+	max-width: none;
+	margin: 0;
+	background: transparent;
+	padding: 0;
+	box-shadow: none;
+	box-sizing: border-box;
+}
+
+.art-theme-post--page-blank .art-theme-page-body {
+	width: 100%;
+	max-width: none;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+.art-theme-shell--page-blank .art-theme-entry-header,
+.art-theme-shell--page-blank .art-theme-entry-content {
+	width: 100%;
+	max-width: none;
+	margin: 0;
+	padding: 0;
+}
+
+/* Narrow self-sized embeds (e.g. game cards) stay centered in the column. */
+.art-theme-shell--page-blank .art-theme-entry-content > * {
+	margin-inline: auto;
+	max-width: 100%;
+}
+
+.art-theme-shell--page-blank .art-theme-entry-content > .alignfull {
+	width: 100vw;
+	max-width: 100vw;
+	margin-inline: calc(50% - 50vw);
+}
+
 .art-theme-post--page .art-theme-entry-content > *:last-child {
 	margin-bottom: 0;
 }

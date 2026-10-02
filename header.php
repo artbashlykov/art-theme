@@ -17,7 +17,13 @@ defined( 'ABSPATH' ) || exit;
 <body <?php body_class(); ?>>
 <?php wp_body_open(); ?>
 
+<?php
+$art_theme_blank_template = function_exists( 'art_theme_is_blank_template_view' ) && art_theme_is_blank_template_view();
+?>
+
 <div class="art-theme-canvas<?php echo esc_attr( art_theme_get_canvas_modifier_class() ); ?>">
-	<?php art_theme_render_site_header(); ?>
+	<?php if ( ! $art_theme_blank_template ) : ?>
+		<?php art_theme_render_site_header(); ?>
+	<?php endif; ?>
 	<div class="art-theme-shell<?php echo esc_attr( art_theme_get_shell_modifier_class() ); ?>">
 		<main id="content" class="art-theme-main">

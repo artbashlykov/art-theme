@@ -65,7 +65,13 @@
 		}
 
 		var templateVariant = pageMeta.meta.art_theme_page_template_variant || 'default';
-		var helpText = 'default' === templateVariant ? config.defaultHelp : '';
+		var helpText = '';
+
+		if ( 'default' === templateVariant ) {
+			helpText = config.defaultHelp || '';
+		} else if ( 'blank' === templateVariant ) {
+			helpText = config.blankHelp || '';
+		}
 		var showHideTitle = -1 !== hideTitlePostTypes.indexOf( pageMeta.postType );
 
 		return createElement(

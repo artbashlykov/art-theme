@@ -156,15 +156,17 @@ function art_theme_enqueue_assets() {
 
 	if ( art_theme_is_page_template_view() ) {
 		$page_settings = Art_Theme_Page_Settings::get_for_singular();
+		$is_blank      = Art_Theme_Page_Settings::is_blank_template( $page_settings );
+		$is_full       = ! $is_blank && Art_Theme_Page_Settings::is_full_width_template( $page_settings );
 		$css_vars      = array(
 			sprintf( '--art-theme-page-width: %1$dpx', (int) $page_settings['page_width'] ),
 			sprintf(
 				'--art-theme-page-gutter: %1$s',
-				Art_Theme_Page_Settings::is_full_width_template( $page_settings ) ? '1.5rem' : '0px'
+				( $is_full || $is_blank ) ? '1.5rem' : '0px'
 			),
 		);
 
-		if ( ! Art_Theme_Page_Settings::is_full_width_template( $page_settings ) ) {
+		if ( ! $is_blank && ! $is_full ) {
 			$boxed_padding = Art_Theme_Page_Settings::get_boxed_padding_css( $page_settings );
 
 			$css_vars[] = sprintf( '--art-theme-page-boxed-radius: %1$dpx', (int) $page_settings['boxed_border_radius'] );
