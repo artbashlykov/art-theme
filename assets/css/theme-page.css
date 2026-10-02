@@ -124,7 +124,7 @@ body.art-theme-blank-template {
 .art-theme-shell--page-blank {
 	width: 100%;
 	max-width: var(--art-theme-page-width, var(--art-theme-width, 850px));
-	margin-block: auto;
+	margin-block: 0;
 	margin-inline: auto;
 	padding-block: 0;
 	padding-inline: var(--art-theme-page-gutter, 1.5rem);
