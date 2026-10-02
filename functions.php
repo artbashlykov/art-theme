@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ART_THEME_VERSION', '1.0.21' );
+define( 'ART_THEME_VERSION', '1.0.22' );
 define( 'ART_THEME_SLUG', 'art-theme' );
 define( 'ART_THEME_DIR', get_template_directory() );
 define( 'ART_THEME_URL', get_template_directory_uri() );
@@ -36,6 +36,7 @@ require_once ART_THEME_DIR . '/inc/site-footer.php';
 require_once ART_THEME_DIR . '/inc/not-found.php';
 require_once ART_THEME_DIR . '/inc/post-performance.php';
 require_once ART_THEME_DIR . '/inc/class-theme-styles.php';
+require_once ART_THEME_DIR . '/inc/class-html-script-protect.php';
 require_once ART_THEME_DIR . '/inc/customizer/class-customizer.php';
 require_once ART_THEME_DIR . '/inc/class-updater.php';
 
@@ -50,6 +51,7 @@ Art_Theme_Footer_Settings::init();
 Art_Theme_Install_Defaults::init();
 Art_Theme_Not_Found_Settings::init();
 Art_Theme_Appearance_Settings::init();
+Art_Theme_Html_Script_Protect::init();
 Art_Theme_Customizer::init();
 
 if ( is_admin() ) {
