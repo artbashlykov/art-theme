@@ -16,7 +16,20 @@
 	box-sizing: border-box;
 }
 
-/* Full HTML replacement from ART Editor. */
+/*
+ * Full HTML replacement from ART Editor.
+ * Flush to viewport edges — Customizer spacing/width modes do not apply.
+ * Keep 100vw on all breakpoints (unlike --width-full, which resets ≤1024px).
+ */
+.art-theme-site-footer--editor {
+	margin-top: 0;
+	margin-bottom: 0;
+	width: 100vw;
+	max-width: 100vw;
+	margin-left: calc(50% - 50vw);
+	margin-right: calc(50% - 50vw);
+}
+
 .art-theme-site-footer--editor > *:first-child {
 	margin-block-start: 0;
 }

@@ -569,6 +569,15 @@ function art_theme_get_canvas_modifier_class() {
 		$classes[] = 'art-theme-canvas--has-footer';
 	}
 
+	// Editor chrome is authored HTML: drop theme canvas gutters around it only.
+	if ( ! art_theme_should_hide_site_chrome() && art_theme_has_editor_site_header() ) {
+		$classes[] = 'art-theme-canvas--has-editor-header';
+	}
+
+	if ( ! art_theme_should_hide_site_chrome() && art_theme_has_editor_site_footer() ) {
+		$classes[] = 'art-theme-canvas--has-editor-footer';
+	}
+
 	if ( empty( $classes ) ) {
 		return '';
 	}
