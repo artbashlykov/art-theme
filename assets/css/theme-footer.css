@@ -16,6 +16,15 @@
 	box-sizing: border-box;
 }
 
+/* Full HTML replacement from ART Editor. */
+.art-theme-site-footer--editor > *:first-child {
+	margin-block-start: 0;
+}
+
+.art-theme-site-footer--editor > *:last-child {
+	margin-block-end: 0;
+}
+
 .art-theme-site-footer--width-fixed {
 	max-width: calc(
 		var(--art-theme-footer-content-width, var(--art-theme-width))

@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
 	<?php
 	$art_theme_blank_template = function_exists( 'art_theme_is_blank_template_view' ) && art_theme_is_blank_template_view();
 
-	if ( ! $art_theme_blank_template && Art_Theme_Footer_Settings::has_visible_content() ) :
+	if ( ! $art_theme_blank_template && art_theme_has_site_footer_chrome() ) :
 		?>
 		<div class="art-theme-canvas__flex-fill" aria-hidden="true"></div>
 	<?php endif; ?>

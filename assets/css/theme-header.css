@@ -25,6 +25,19 @@
 	);
 }
 
+/* Full HTML replacement from ART Editor — keep spacing, skip Customizer chrome layout. */
+.art-theme-site-header--editor {
+	overflow: visible;
+}
+
+.art-theme-site-header--editor > *:first-child {
+	margin-block-start: 0;
+}
+
+.art-theme-site-header--editor > *:last-child {
+	margin-block-end: 0;
+}
+
 .art-theme-site-header__inner {
 	display: grid;
 	/* Brand keeps intrinsic width; nav takes the leftover and may collapse to burger. */

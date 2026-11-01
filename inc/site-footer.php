@@ -9,8 +9,23 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Render site footer when it has visible content.
+ *
+ * Priority: blank (nothing) → ART Editor HTML → Customizer footer.
  */
 function art_theme_render_site_footer() {
+	if ( art_theme_should_hide_site_chrome() ) {
+		return;
+	}
+
+	$editor_footer = art_theme_get_editor_site_footer();
+
+	if ( null !== $editor_footer ) {
+		echo '<div class="art-theme-site-footer art-theme-site-footer--editor">';
+		art_theme_print_editor_chrome_html( $editor_footer['html'] );
+		echo '</div>';
+		return;
+	}
+
 	$settings = Art_Theme_Footer_Settings::get();
 
 	if ( ! Art_Theme_Footer_Settings::has_visible_content( $settings ) ) {

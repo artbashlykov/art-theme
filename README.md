@@ -2,7 +2,7 @@
 
 Простая тема WordPress без сайдбара, направленная на увеличение скорости загрузки сайта (>95 PageSpeed), оптимизированная под мобильные устройства. Шапка, подвал, блог, записи и страницы настраиваются в Customizer. Gutenberg — для контента записей и страниц.
 
-**Версия:** 1.0.22  
+**Версия:** 1.0.23  
 **Требования:** WordPress 6.0+ (протестировано с 7.0), PHP 7.4+
 
 **Официальный репозиторий:** [https://github.com/artbashlykov/art-theme](https://github.com/artbashlykov/art-theme) (публичный)
@@ -42,6 +42,10 @@ art-theme/
     │   └── theme-*.css    # split bundles (base, header, archive, …)
     └── fonts/             # Manrope, Rubik (.woff2)
 ```
+
+## ART Editor
+
+Если активен плагин **ART Editor** и в **ART Editor → Шапка и подвал** включена зона, тема выводит её HTML вместо шапки/подвала Customizer. Шаблон страницы «Без шапки и подвала» и canvas-лендинги Editor по-прежнему без chrome темы.
 
 ## Установка
 

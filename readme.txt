@@ -4,7 +4,7 @@ Tags: one-column, custom-menu, custom-logo, featured-images, translation-ready, 
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.22
+Stable tag: 1.0.23
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,6 +46,9 @@ No. The theme is intentionally one-column.
 No. The theme works standalone. If ART Starter is active, footer social icons can use the shared icon registry.
 
 == Changelog ==
+
+= 1.0.23 =
+* Интеграция с ART Editor: если включена общая шапка/подвал плагина, тема показывает их HTML вместо Customizer; blank-шаблон по-прежнему без chrome.
 
 = 1.0.22 =
 * Фронт: защита inline-JS в HTML-блоках от поломки фильтром the_content (&& → &#038;).

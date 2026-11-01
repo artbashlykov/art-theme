@@ -40,7 +40,10 @@ function art_theme_enqueue_assets() {
 	// Keep vars on the primary bundle too (cascade after theme-base.css defaults).
 	wp_add_inline_style( $style_handle, Art_Theme_Appearance_Settings::get_inline_css() );
 
-	if ( ! empty( Art_Theme_Header_Settings::get_visible_order() ) ) {
+	$has_customizer_header = ! empty( Art_Theme_Header_Settings::get_visible_order() );
+	$has_editor_header     = function_exists( 'art_theme_has_editor_site_header' ) && art_theme_has_editor_site_header();
+
+	if ( ( $has_customizer_header || $has_editor_header ) && ! ( function_exists( 'art_theme_should_hide_site_chrome' ) && art_theme_should_hide_site_chrome() ) ) {
 		$header_settings = Art_Theme_Header_Settings::get();
 		$header_css_vars = array(
 			sprintf( '--art-theme-header-top-spacing: %1$dpx', (int) $header_settings['header_top_spacing'] ),
@@ -55,26 +58,29 @@ function art_theme_enqueue_assets() {
 			':root { ' . implode( '; ', $header_css_vars ) . '; }'
 		);
 
-		$header_script_path = ART_THEME_DIR . '/assets/js/header-nav.js';
+		// Customizer burger/menu JS only when theme chrome is rendered.
+		if ( $has_customizer_header && ! $has_editor_header ) {
+			$header_script_path = ART_THEME_DIR . '/assets/js/header-nav.js';
 
-		wp_enqueue_script(
-			'art-theme-header-nav',
-			ART_THEME_URL . '/assets/js/header-nav.js',
-			array(),
-			file_exists( $header_script_path ) ? (string) filemtime( $header_script_path ) : ART_THEME_VERSION,
-			array(
-				'in_footer' => true,
-				'strategy'  => 'defer',
-			)
-		);
+			wp_enqueue_script(
+				'art-theme-header-nav',
+				ART_THEME_URL . '/assets/js/header-nav.js',
+				array(),
+				file_exists( $header_script_path ) ? (string) filemtime( $header_script_path ) : ART_THEME_VERSION,
+				array(
+					'in_footer' => true,
+					'strategy'  => 'defer',
+				)
+			);
 
-		wp_localize_script(
-			'art-theme-header-nav',
-			'artThemeHeaderNav',
-			array(
-				'toggleLabel' => __( 'Раскрыть подменю', 'art-theme' ),
-			)
-		);
+			wp_localize_script(
+				'art-theme-header-nav',
+				'artThemeHeaderNav',
+				array(
+					'toggleLabel' => __( 'Раскрыть подменю', 'art-theme' ),
+				)
+			);
+		}
 	}
 
 	$footer_settings = Art_Theme_Footer_Settings::get();

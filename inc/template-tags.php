@@ -565,7 +565,7 @@ function art_theme_get_canvas_modifier_class() {
 		$classes[] = 'art-theme-canvas--archive';
 	}
 
-	if ( ! art_theme_is_blank_template_view() && Art_Theme_Footer_Settings::has_visible_content() ) {
+	if ( art_theme_has_site_footer_chrome() ) {
 		$classes[] = 'art-theme-canvas--has-footer';
 	}
 

@@ -354,22 +354,34 @@ class Art_Theme_Customizer {
 
 		self::register_appearance( $wp_customize );
 
+		$header_panel_description = __( 'Элементы шапки и их видимость.', 'art-theme' );
+
+		if ( function_exists( 'art_theme_has_editor_site_header' ) && art_theme_has_editor_site_header() ) {
+			$header_panel_description .= ' ' . __( 'Сейчас на сайте показывается шапка из ART Editor (ART Editor → Шапка и подвал). Настройки ниже применяются, когда шапка Editor выключена или пуста.', 'art-theme' );
+		}
+
 		$wp_customize->add_panel(
 			'art_theme_header',
 			array(
 				'title'       => __( 'Настройки шапки', 'art-theme' ),
-				'description' => __( 'Элементы шапки и их видимость.', 'art-theme' ),
+				'description' => $header_panel_description,
 				'priority'    => 100,
 			)
 		);
 
 		self::register_site_header( $wp_customize );
 
+		$footer_panel_description = __( 'Структура, оформление и содержимое подвала.', 'art-theme' );
+
+		if ( function_exists( 'art_theme_has_editor_site_footer' ) && art_theme_has_editor_site_footer() ) {
+			$footer_panel_description .= ' ' . __( 'Сейчас на сайте показывается подвал из ART Editor (ART Editor → Шапка и подвал). Настройки ниже применяются, когда подвал Editor выключен или пуст.', 'art-theme' );
+		}
+
 		$wp_customize->add_panel(
 			'art_theme_footer',
 			array(
 				'title'       => __( 'Настройки подвала', 'art-theme' ),
-				'description' => __( 'Структура, оформление и содержимое подвала.', 'art-theme' ),
+				'description' => $footer_panel_description,
 				'priority'    => 105,
 			)
 		);

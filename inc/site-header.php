@@ -38,8 +38,23 @@ function art_theme_header_has_visible_content( $settings ) {
 
 /**
  * Render site header when at least one item is visible.
+ *
+ * Priority: blank (nothing) → ART Editor HTML → Customizer header.
  */
 function art_theme_render_site_header() {
+	if ( art_theme_should_hide_site_chrome() ) {
+		return;
+	}
+
+	$editor_header = art_theme_get_editor_site_header();
+
+	if ( null !== $editor_header ) {
+		echo '<div class="art-theme-site-header art-theme-site-header--editor">';
+		art_theme_print_editor_chrome_html( $editor_header['html'] );
+		echo '</div>';
+		return;
+	}
+
 	$settings = Art_Theme_Header_Settings::get();
 
 	if ( ! art_theme_header_has_visible_content( $settings ) ) {

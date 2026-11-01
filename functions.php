@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ART_THEME_VERSION', '1.0.22' );
+define( 'ART_THEME_VERSION', '1.0.23' );
 define( 'ART_THEME_SLUG', 'art-theme' );
 define( 'ART_THEME_DIR', get_template_directory() );
 define( 'ART_THEME_URL', get_template_directory_uri() );
@@ -31,6 +31,7 @@ require_once ART_THEME_DIR . '/inc/admin/class-install-defaults.php';
 require_once ART_THEME_DIR . '/inc/admin/class-not-found-settings.php';
 require_once ART_THEME_DIR . '/inc/admin/class-appearance-settings.php';
 require_once ART_THEME_DIR . '/inc/class-social-icons.php';
+require_once ART_THEME_DIR . '/inc/editor-chrome.php';
 require_once ART_THEME_DIR . '/inc/site-header.php';
 require_once ART_THEME_DIR . '/inc/site-footer.php';
 require_once ART_THEME_DIR . '/inc/not-found.php';
