@@ -250,20 +250,64 @@
 	z-index: 2;
 }
 
-/* Hide hex field + WP “Default” — we already have «Сбросить». */
-#customize-theme-controls .customize-control.art-theme-field-enhanced--color .wp-picker-input-wrap {
+/*
+ * Hex input is available when the picker is open.
+ * Hide WP “Default” / Clear — we already have «Сбросить».
+ */
+#customize-theme-controls .customize-control.art-theme-field-enhanced--color .wp-picker-input-wrap.hidden {
 	display: none !important;
 }
 
-/* Palette below the square. */
-#customize-theme-controls .customize-control.art-theme-field-enhanced--color .wp-picker-holder {
+#customize-theme-controls .customize-control.art-theme-field-enhanced--color .wp-picker-default,
+#customize-theme-controls .customize-control.art-theme-field-enhanced--color .wp-picker-clear {
+	display: none !important;
+}
+
+#customize-theme-controls .customize-control.art-theme-field-enhanced--color .wp-picker-container.wp-picker-active .wp-picker-input-wrap {
+	display: flex !important;
+	align-items: center;
 	position: absolute !important;
 	top: calc(100% + 6px) !important;
+	left: 0 !important;
+	z-index: 4;
+	width: 255px;
+	max-width: 255px;
+	box-sizing: border-box;
+	padding: 8px;
+	margin: 0;
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-bottom: 0;
+	border-radius: 2px 2px 0 0;
+}
+
+#customize-theme-controls .customize-control.art-theme-field-enhanced--color .wp-picker-container.wp-picker-active .wp-picker-input-wrap label {
+	display: block;
+	flex: 1 1 auto;
+	margin: 0;
+	min-width: 0;
+}
+
+#customize-theme-controls .customize-control.art-theme-field-enhanced--color .wp-picker-container.wp-picker-active .wp-picker-input-wrap .wp-color-picker {
+	width: 100% !important;
+	max-width: none !important;
+	margin: 0;
+}
+
+/* Palette below the hex row. */
+#customize-theme-controls .customize-control.art-theme-field-enhanced--color .wp-picker-holder {
+	position: absolute !important;
+	top: calc(100% + 6px + 40px) !important;
 	left: 0 !important;
 	right: auto !important;
 	width: auto !important;
 	min-width: 255px;
 	z-index: 3;
+}
+
+#customize-theme-controls .customize-control.art-theme-field-enhanced--color .wp-picker-container.wp-picker-active .iris-picker {
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
 }
 
 /* Color square only — hide “Select Color” / «Выбрать цвет». */
