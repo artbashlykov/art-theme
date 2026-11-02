@@ -140,11 +140,15 @@
 			}
 
 			placeResetButton();
+			placeHexBelowPalette( $picker );
 			$container.addClass( 'art-theme-field-enhanced art-theme-field-enhanced--color' );
 			$container.removeData( 'artThemeColorEnhancing' );
 
-			// Iris can re-wrap nodes after init — re-assert button placement once more.
-			window.setTimeout( placeResetButton, 100 );
+			// Iris can re-wrap nodes after init — re-assert placement once more.
+			window.setTimeout( function () {
+				placeResetButton();
+				placeHexBelowPalette( $picker );
+			}, 100 );
 
 			var syncOpenClass = function () {
 				var isOpen = $picker.hasClass( 'wp-picker-active' );
@@ -166,6 +170,24 @@
 		}
 
 		attempt();
+	}
+
+	/**
+	 * Keep the hex field under the Iris palette (not above it).
+	 *
+	 * @param {JQuery} $picker Color picker container.
+	 */
+	function placeHexBelowPalette( $picker ) {
+		var $holder = $picker.find( '.wp-picker-holder' ).first();
+		var $inputWrap = $picker.find( '.wp-picker-input-wrap' ).first();
+
+		if ( ! $holder.length || ! $inputWrap.length ) {
+			return;
+		}
+
+		if ( ! $inputWrap.parent().is( $holder ) ) {
+			$holder.append( $inputWrap );
+		}
 	}
 
 	/**

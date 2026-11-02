@@ -263,22 +263,45 @@
 	display: none !important;
 }
 
-#customize-theme-controls .customize-control.art-theme-field-enhanced--color .wp-picker-container.wp-picker-active .wp-picker-input-wrap {
-	display: flex !important;
-	align-items: center;
+/* Palette under the swatch; hex field sits below Iris (JS moves wrap into holder). */
+#customize-theme-controls .customize-control.art-theme-field-enhanced--color .wp-picker-holder {
 	position: absolute !important;
 	top: calc(100% + 6px) !important;
 	left: 0 !important;
-	z-index: 4;
-	width: 255px;
-	max-width: 255px;
+	right: auto !important;
+	width: auto !important;
+	min-width: 255px;
+	z-index: 3;
+	/* No border here when closed — empty holder border looked like row dividers. */
+}
+
+#customize-theme-controls .customize-control.art-theme-field-enhanced--color .wp-picker-container.wp-picker-active .wp-picker-holder {
+	box-sizing: border-box;
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 2px;
+	overflow: hidden;
+}
+
+#customize-theme-controls .customize-control.art-theme-field-enhanced--color .wp-picker-container.wp-picker-active .iris-picker {
+	margin-top: 0 !important;
+	border: 0 !important;
+	border-radius: 0 !important;
+}
+
+#customize-theme-controls .customize-control.art-theme-field-enhanced--color .wp-picker-container.wp-picker-active .wp-picker-input-wrap {
+	display: flex !important;
+	align-items: center;
+	position: static !important;
+	width: 100%;
+	max-width: none;
 	box-sizing: border-box;
 	padding: 8px;
 	margin: 0;
 	background: #fff;
-	border: 1px solid #dcdcde;
-	border-bottom: 0;
-	border-radius: 2px 2px 0 0;
+	border: 0;
+	border-top: 1px solid #dcdcde;
+	border-radius: 0;
 }
 
 #customize-theme-controls .customize-control.art-theme-field-enhanced--color .wp-picker-container.wp-picker-active .wp-picker-input-wrap label {
@@ -292,22 +315,6 @@
 	width: 100% !important;
 	max-width: none !important;
 	margin: 0;
-}
-
-/* Palette below the hex row. */
-#customize-theme-controls .customize-control.art-theme-field-enhanced--color .wp-picker-holder {
-	position: absolute !important;
-	top: calc(100% + 6px + 40px) !important;
-	left: 0 !important;
-	right: auto !important;
-	width: auto !important;
-	min-width: 255px;
-	z-index: 3;
-}
-
-#customize-theme-controls .customize-control.art-theme-field-enhanced--color .wp-picker-container.wp-picker-active .iris-picker {
-	border-top-left-radius: 0;
-	border-top-right-radius: 0;
 }
 
 /* Color square only — hide “Select Color” / «Выбрать цвет». */
