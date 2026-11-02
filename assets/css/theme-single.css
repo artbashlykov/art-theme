@@ -20,6 +20,11 @@
 	padding-bottom: var(--art-theme-space-lg);
 }
 
+/* theme-single.css loads after theme-base — keep editor footer flush. */
+.art-theme-canvas--single-full.art-theme-canvas--has-editor-footer {
+	padding-bottom: 0;
+}
+
 .art-theme-shell--single-full {
 	max-width: none;
 	background: transparent;

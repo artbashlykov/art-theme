@@ -27,16 +27,15 @@
 
 /*
  * Full HTML replacement from ART Editor.
- * Flush to viewport edges — Customizer spacing/width modes do not apply.
- * Keep 100vw on all breakpoints (unlike --width-full, which resets ≤1024px).
+ * Canvas drops inline padding when editor chrome is active — width 100% is enough.
+ * Avoid 100vw breakout: parent uses overflow-x: clip and would crop it.
  */
 .art-theme-site-header--editor {
 	overflow: visible;
 	margin-bottom: 0;
-	width: 100vw;
-	max-width: 100vw;
-	margin-left: calc(50% - 50vw);
-	margin-right: calc(50% - 50vw);
+	width: 100%;
+	max-width: 100%;
+	margin-inline: 0;
 }
 
 .art-theme-site-header--editor > *:first-child {

@@ -107,14 +107,34 @@ img {
 	padding-bottom: 0;
 }
 
-/* ART Editor site header: no theme top gutter (HTML owns spacing). */
+/*
+ * ART Editor site chrome lives inside the canvas.
+ * Drop theme gutters around header/footer so HTML can be edge-to-edge.
+ * Keep shell side padding (page/single) or restore it for archive below.
+ */
 .art-theme-canvas--has-editor-header {
 	padding-top: 0;
 }
 
-/* ART Editor site footer: keep canvas bottom flush (has-footer) + mark for CSS hooks. */
 .art-theme-canvas--has-editor-footer {
 	padding-bottom: 0;
+}
+
+.art-theme-canvas--has-editor-header,
+.art-theme-canvas--has-editor-footer {
+	padding-inline: 0;
+}
+
+/*
+ * Editor chrome zeros header/footer theme margins — restore the same gap
+ * as outer shell spacing so Customizer top/bottom still separates content.
+ */
+.art-theme-canvas--has-editor-header .art-theme-shell {
+	margin-top: var(--art-theme-header-bottom-spacing, 32px);
+}
+
+.art-theme-canvas--has-editor-footer .art-theme-shell {
+	margin-bottom: var(--art-theme-footer-top-spacing, 32px);
 }
 
 .art-theme-shell {
@@ -125,6 +145,7 @@ img {
 	background: var(--art-theme-surface);
 	padding: 0 var(--art-theme-space-md) var(--art-theme-space-lg);
 	box-shadow: 0 2px 24px rgba(0, 0, 0, 0.06);
+	box-sizing: border-box;
 }
 
 /* Fills space between content and footer; shows canvas background (gray). */
@@ -140,6 +161,12 @@ img {
 	background: transparent;
 	padding: 0;
 	box-shadow: none;
+}
+
+/* Archive has no side padding — restore canvas gutter when editor chrome zeros it. */
+.art-theme-canvas--has-editor-header .art-theme-shell--archive,
+.art-theme-canvas--has-editor-footer .art-theme-shell--archive {
+	padding-inline: var(--art-theme-space-sm);
 }
 
 .art-theme-shell--single {

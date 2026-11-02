@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ART_THEME_VERSION', '1.0.24' );
+define( 'ART_THEME_VERSION', '1.0.25' );
 define( 'ART_THEME_SLUG', 'art-theme' );
 define( 'ART_THEME_DIR', get_template_directory() );
 define( 'ART_THEME_URL', get_template_directory_uri() );

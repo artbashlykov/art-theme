@@ -9,6 +9,14 @@
 	margin-bottom: var(--art-theme-blog-bottom-spacing, 16px);
 }
 
+/* Native footer margin-top is zeroed for editor chrome — keep blog + footer gaps. */
+.art-theme-canvas--has-editor-footer .art-theme-shell--archive {
+	margin-bottom: calc(
+		var(--art-theme-blog-bottom-spacing, 16px)
+		+ var(--art-theme-footer-top-spacing, 32px)
+	);
+}
+
 .art-theme-shell--archive .art-theme-archive-header {
 	margin-bottom: var(--art-theme-space-lg);
 }
